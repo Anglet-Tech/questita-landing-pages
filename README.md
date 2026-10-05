@@ -10,8 +10,9 @@ Stack: Next.js (App Router, static export), TypeScript, Tailwind CSS v4, GSAP 3 
 | --- | --- | --- |
 | Main, the full pixel scroll story | http://localhost:3000/ | https://abdelrahmantarekm.github.io/questita_landing/ |
 | Minimal, coconut throughout with small playful moments | http://localhost:3000/minimal/ | https://abdelrahmantarekm.github.io/questita_landing/minimal/ |
+| The Quest, a tiny retro RPG across a pixel map of Cairo | http://localhost:3000/quest/ | https://abdelrahmantarekm.github.io/questita_landing/quest/ |
 
-Both share PixelFox, PixelDigit and `useCountdown`, the join logic (`useJoin`), the contact modal, Lenis and the `.ics` helper. The minimal page never loads the preloader, reveal canvas, seams, pins or marquee.
+Both share PixelFox, PixelDigit and `useCountdown`, the join logic (`useJoin`), the contact modal, Lenis and the `.ics` helper. The minimal and quest pages never load the preloader, reveal canvas, seams, pins or marquee. The quest map is generated procedurally from a fixed seed (`src/components/quest/mapgen.ts`), drawn once offscreen, and panned by a camera as the fox walks; under reduced motion it becomes a static strip plus plain panels.
 
 The countdown is driven by one shared clock (`src/lib/countdown.ts`). After `LAUNCH_ISO` passes, every counter reads "The board is open" and the Add to calendar buttons disappear. To preview that state, override `Date.now` in the browser console (or in a test harness) rather than editing the config.
 

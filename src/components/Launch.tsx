@@ -67,7 +67,7 @@ export default function Launch() {
         gsap.from(fox.current, {
           yPercent: 100,
           ease: "none",
-          scrollTrigger: { trigger: section.current, start: "top 40%", end: "top 10%", scrub: 0.6 },
+          scrollTrigger: { trigger: section.current, start: "top 75%", end: "top 35%", scrub: 0.6 },
         });
       });
       return () => mm.revert();
@@ -82,7 +82,12 @@ export default function Launch() {
           ref={counter}
           className="launch-counter"
           slot={
-            <div className="pointer-events-none absolute bottom-[calc(100%-var(--bc-dp)*2)] right-[-6%] -z-10 overflow-hidden" style={{ width: "calc(var(--bc-dp) * 9)", aspectRatio: "41 / 35" }}>
+            // Clip box ends exactly at the digit tops: only ears and eyes show, the
+            // muzzle stays hidden below the line, so the glyphs are never covered.
+            <div
+              className="pointer-events-none absolute bottom-full right-[calc(var(--bc-dp)*1)] overflow-hidden"
+              style={{ width: "calc(var(--bc-dp) * var(--fox-k))", height: "calc(var(--bc-dp) * var(--fox-k) * 35 / 41 * 0.68)" }}
+            >
               <div ref={fox}>
                 <PixelFox frame="wow" />
               </div>

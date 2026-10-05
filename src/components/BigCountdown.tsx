@@ -39,7 +39,7 @@ const BigCountdown = forwardRef<
         {pairs.map((p, i) => (
           <div key={p.l} className="contents">
             {i > 0 && (
-              <div className="pt-0 text-[length:var(--bc-dh)]">
+              <div className="px-[calc(var(--bc-dp)*0.8)] text-[length:var(--bc-dh)]">
                 <PixelColon on={!c.ready || c.seconds % 2 === 0} />
               </div>
             )}

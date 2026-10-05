@@ -858,14 +858,14 @@ html[data-preload] .preloader {
   box-shadow: 0 1px 0 rgba(104, 27, 43, 0.1);
 }
 .min-counter {
-  --bc-dp: min(calc((100vw - 32px) / 52), 19px);
+  --bc-dp: min(calc((100vw - 32px) / 60), 19px);
 }
 .launch-counter {
-  --bc-dp: min(calc((100vw - 32px) / 50), 28px);
+  --bc-dp: min(calc((100vw - 32px) / 58), 28px);
 }
 @media (min-width: 1024px) {
   .launch-counter {
-    --bc-dp: min(calc((100vw - 96px) / 50), 28px);
+    --bc-dp: min(calc((100vw - 96px) / 56), 28px);
   }
 }
 
@@ -965,4 +965,16 @@ li:hover > .hl-hover::before {
 .nav[data-theme="yellow"] .nav-pill.nav-pill {
   --btn-bg: var(--merlot);
   --btn-fg: var(--yellow);
+}
+
+/* Room above the Launch digits for the peeking fox, so it never sits under the nav. */
+.launch-counter {
+  --fox-k: 9;
+  margin-top: calc(var(--bc-dp) * 6.5);
+}
+@media (max-width: 639px) {
+  .launch-counter {
+    --fox-k: 13;
+    margin-top: calc(var(--bc-dp) * 9);
+  }
 }

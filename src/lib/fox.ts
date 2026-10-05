@@ -38,3 +38,19 @@ export function distanceFromNose(r: FoxRect): number {
 
 /** Largest possible distance, used to normalise pop-in staggers. */
 export const MAX_NOSE_DISTANCE = Math.hypot(NOSE.x, NOSE.y);
+
+/**
+ * Per-row horizontal extent of the happy fox (the space between the ears
+ * included), in fox pixels. Used to keep the hero reveal trail off the fox.
+ */
+export const FOX_ROW_SPANS: [y: number, x0: number, x1: number][] = (() => {
+  const min = Array<number>(FOX_H).fill(Infinity);
+  const max = Array<number>(FOX_H).fill(-Infinity);
+  for (const layer of FOX.happy.layers)
+    for (const [x, y, w, h] of layer.rects)
+      for (let j = y; j < y + h; j++) {
+        min[j] = Math.min(min[j], x);
+        max[j] = Math.max(max[j], x + w);
+      }
+  return min.map((m, y) => [y, m, max[y]] as [number, number, number]).filter(([, a]) => Number.isFinite(a));
+})();

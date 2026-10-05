@@ -742,3 +742,24 @@ html[data-preload] .preloader {
   outline: 3px solid var(--merlot);
   outline-offset: 2px;
 }
+
+/* Footer peek: fox width per breakpoint, clip box bottom just below the cap line. */
+.foot-peek {
+  --fw: 123px;
+  width: var(--fw);
+  bottom: calc(100% - 0.16em - var(--fw) * 35 / 41 * 0.12);
+}
+@media (min-width: 640px) {
+  .foot-peek {
+    --fw: 205px;
+  }
+}
+@media (min-width: 1024px) {
+  .foot-peek {
+    --fw: 246px;
+  }
+  .cairo-line {
+    white-space: nowrap;
+    letter-spacing: 0.2em;
+  }
+}

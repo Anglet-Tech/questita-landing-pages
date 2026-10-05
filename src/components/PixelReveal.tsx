@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, hasFinePointer, prefersReducedMotion } from "@/lib/gsap";
+import { FOX_H, FOX_ROW_SPANS, FOX_W } from "@/lib/fox";
 
 const MERLOT = "#681B2B";
 const CELL = 40;
@@ -58,6 +59,15 @@ export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTML
       excludes = Array.from(host.querySelectorAll<HTMLElement>("[data-reveal-exclude]")).map((el) => {
         const r = el.getBoundingClientRect();
         return new DOMRect(r.left - canvasRect.left - 8, r.top - canvasRect.top - 8, r.width + 16, r.height + 16);
+      });
+      // The fox silhouette, row by row, so the trail never shows through it.
+      host.querySelectorAll<HTMLElement>("[data-reveal-fox]").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const px = r.width / FOX_W;
+        const top = r.top - canvasRect.top + (r.height - FOX_H * px) / 2;
+        for (const [y, x0, x1] of FOX_ROW_SPANS) {
+          excludes.push(new DOMRect(r.left - canvasRect.left + x0 * px, top + y * px, (x1 - x0) * px, px));
+        }
       });
     };
 

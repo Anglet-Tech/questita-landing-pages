@@ -196,6 +196,7 @@ export default function Hero() {
             type="button"
             onClick={onFoxClick}
             aria-label="Poke the fox"
+            data-reveal-fox
             className="w-[164px] cursor-pointer sm:w-[246px] md:w-[287px] lg:w-[451px] xl:w-[533px]"
           >
             <PixelFox frame={frame} trackEyes followHead />

@@ -4,6 +4,17 @@ The pre-launch landing page for Questita, a social quest app for Cairo. It is bu
 
 Stack: Next.js (App Router, static export), TypeScript, Tailwind CSS v4, GSAP 3 (ScrollTrigger, SplitText, `@gsap/react`) and Lenis smooth scroll on the GSAP ticker. GSAP is the only animation engine.
 
+## Two versions
+
+| Route | Local | GitHub Pages |
+| --- | --- | --- |
+| Main, the full pixel scroll story | http://localhost:3000/ | https://abdelrahmantarekm.github.io/questita_landing/ |
+| Minimal, coconut throughout with small playful moments | http://localhost:3000/minimal/ | https://abdelrahmantarekm.github.io/questita_landing/minimal/ |
+
+Both share PixelFox, PixelDigit and `useCountdown`, the join logic (`useJoin`), the contact modal, Lenis and the `.ics` helper. The minimal page never loads the preloader, reveal canvas, seams, pins or marquee.
+
+The countdown is driven by one shared clock (`src/lib/countdown.ts`). After `LAUNCH_ISO` passes, every counter reads "The board is open" and the Add to calendar buttons disappear. To preview that state, override `Date.now` in the browser console (or in a test harness) rather than editing the config.
+
 ## Develop
 
 ```bash

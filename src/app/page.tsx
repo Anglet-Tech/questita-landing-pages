@@ -8,6 +8,7 @@ import How from "@/components/How";
 import Belief from "@/components/Belief";
 import Safety from "@/components/Safety";
 import Who from "@/components/Who";
+import Launch from "@/components/Launch";
 import Partners from "@/components/Partners";
 import Footer from "@/components/Footer";
 import ContactModal from "@/components/ContactModal";
@@ -28,6 +29,7 @@ export default function Home() {
         <Belief />
         <Safety />
         <Who />
+        <Launch />
         <Partners />
       </main>
       <Footer />

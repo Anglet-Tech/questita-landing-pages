@@ -6,6 +6,7 @@ import { asset } from "@/lib/asset";
 import { openContact, scrollToTarget, setScrollLock } from "@/lib/store";
 import PixelFox from "./PixelFox";
 import { Magnetic, Roll } from "./ui";
+import NavCounter from "./NavCounter";
 
 export const NAV_LINKS = [
   { href: "#board", label: "The board" },
@@ -26,6 +27,7 @@ export default function Nav() {
   const menu = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
+  const [pill, setPill] = useState(false);
 
   // Section-aware colour and active link, driven by ScrollTrigger toggles.
   useGSAP(
@@ -51,6 +53,18 @@ export default function Nav() {
           ease: "expo.out",
         });
       };
+
+      // The mini counter slides in once the hero (and its big counter) is gone.
+      const hero = document.querySelector("#top");
+      if (hero) {
+        ScrollTrigger.create({
+          trigger: hero,
+          start: "bottom 68px",
+          refreshPriority: -1,
+          onEnter: () => setPill(true),
+          onLeaveBack: () => setPill(false),
+        });
+      }
 
       document.querySelectorAll<HTMLElement>("[data-nav]").forEach((section) => {
         ScrollTrigger.create({
@@ -197,8 +211,9 @@ export default function Nav() {
               />
             </ul>
 
-            <div className="flex items-center gap-3">
-              <Magnetic>
+            <div className="nav-right relative flex items-center gap-2 sm:gap-3">
+              <NavCounter visible={pill} />
+              <Magnetic className={`nav-cta${pill ? " has-pill" : ""}`}>
                 <button type="button" onClick={openContact} className="btn btn-yellow btn-sm roll-host">
                   <Roll>Get in touch</Roll>
                 </button>

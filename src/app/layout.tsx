@@ -61,7 +61,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${manrope.variable} ${pixel.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
-        <link rel="preload" as="image" href={asset("/img/felucca.png")} fetchPriority="high" />
       </head>
       <body>{children}</body>
     </html>

@@ -9,18 +9,21 @@ import type { FoxFrame } from "@/lib/fox";
 import PixelFox, { popFox } from "./PixelFox";
 import PixelReveal from "./PixelReveal";
 import Marquee from "./Marquee";
-import Countdown from "./Countdown";
+import HeroCounter from "./HeroCounter";
+import { preload } from "react-dom";
 import { Arrow, Magnetic, Roll } from "./ui";
 
 const CYCLE: FoxFrame[] = ["happy", "wink", "wow"];
 
 export default function Hero() {
+  // Above-the-fold scene: preload it from the page that needs it.
+  preload(asset("/img/felucca.png"), { as: "image", fetchPriority: "high" });
   const hero = useRef<HTMLElement>(null);
   const copy = useRef<HTMLDivElement>(null);
   const foxCol = useRef<HTMLDivElement>(null);
   const foxBtn = useRef<HTMLButtonElement>(null);
   const h1 = useRef<HTMLHeadingElement>(null);
-  const countdown = useRef<HTMLParagraphElement>(null);
+  const countdown = useRef<HTMLDivElement>(null);
   const sub = useRef<HTMLParagraphElement>(null);
   const cta = useRef<HTMLSpanElement>(null);
   const tape = useRef<HTMLDivElement>(null);
@@ -47,7 +50,7 @@ export default function Hero() {
           mask: "lines",
           linesClass: "split-mask",
         });
-        const chars = countdown.current!.querySelectorAll("[data-char]");
+        const tiles = countdown.current!.querySelectorAll("[data-tile], p");
         tl = gsap.timeline({
           onComplete: () => {
             html.classList.remove("intro");
@@ -58,11 +61,11 @@ export default function Hero() {
         });
         tl.set("[data-intro]", { visibility: "visible" })
           .from(split.lines, { yPercent: 110, duration: 0.9, ease: "expo.out", stagger: 0.08 }, 0.05)
-          .from(chars, { autoAlpha: 0, duration: 0.01, stagger: 0.022, ease: "none" }, 0.1)
+          .fromTo(tiles, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.36, ease: "steps(4)", stagger: 0.07 }, 0.05)
           .add(popFox(foxCol.current, { duration: 0.2, spread: 0.55 }), 0.1)
-          .from(sub.current, { y: 24, autoAlpha: 0, duration: 0.8, ease: "expo.out" }, 0.35)
-          .from(cta.current, { yPercent: 120, autoAlpha: 0, duration: 0.8, ease: "expo.out" }, 0.45)
-          .from(tape.current, { x: () => window.innerWidth, duration: 1.1, ease: "expo.out" }, 0.3);
+          .fromTo(sub.current, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: "expo.out" }, 0.35)
+          .fromTo(cta.current, { yPercent: 120, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.8, ease: "expo.out" }, 0.45)
+          .fromTo(tape.current, { x: () => window.innerWidth }, { x: 0, duration: 1.1, ease: "expo.out" }, 0.3);
       };
       const off = onReady(() => void play());
 
@@ -154,14 +157,14 @@ export default function Hero() {
       <div className="relative z-10 mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 content-center gap-6 px-4 pb-10 pt-[calc(var(--nav-h)+16px)] sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-12 lg:pb-16 lg:pt-[calc(var(--nav-h)+24px)]">
         <div ref={copy} className="order-2 lg:order-1 lg:col-span-7">
           <div data-reveal-exclude data-intro className="w-fit">
-            <Countdown ref={countdown} />
+            <HeroCounter ref={countdown} />
           </div>
           <h1
             id="hero-title"
             ref={h1}
             data-reveal-exclude
             data-intro
-            className="mt-5 text-[clamp(3rem,7vw,6rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-coconut lg:mt-7"
+            className="mt-6 text-[clamp(2.4rem,6vw,5.25rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-coconut lg:mt-8"
           >
             <span data-line className="block">
               Find the thing.
@@ -174,11 +177,11 @@ export default function Hero() {
             ref={sub}
             data-reveal-exclude
             data-intro
-            className="mt-5 max-w-[34rem] text-[1.0625rem] font-medium leading-relaxed text-coconut-78 sm:text-[1.1875rem] lg:mt-7"
+            className="mt-4 max-w-[34rem] text-[1rem] font-medium leading-relaxed text-coconut-78 sm:text-[1.1875rem] lg:mt-6"
           >
             Questita is a social quest app for Cairo. Someone posts a plan, you join in, the big city feels smaller.
           </p>
-          <div className="mt-7 lg:mt-9">
+          <div className="mt-6 lg:mt-8">
             <Magnetic>
               <span ref={cta} data-intro className="inline-block">
                 <a href="#how" className="btn btn-yellow roll-host">
@@ -197,7 +200,7 @@ export default function Hero() {
             onClick={onFoxClick}
             aria-label="Poke the fox"
             data-reveal-fox
-            className="w-[164px] cursor-pointer sm:w-[246px] md:w-[287px] lg:w-[451px] xl:w-[533px]"
+            className="w-[123px] cursor-pointer sm:w-[205px] md:w-[287px] lg:w-[451px] xl:w-[533px]"
           >
             <PixelFox frame={frame} trackEyes followHead />
           </button>

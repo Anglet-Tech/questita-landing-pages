@@ -165,7 +165,8 @@ html.lenis body {
    ------------------------------------------------------------------------ */
 .px-corners,
 .btn::before,
-.px-bg::before {
+.px-bg::before,
+.hl::before {
   --s: var(--step, 4px);
   clip-path: polygon(
     0 calc(var(--s) * 2),
@@ -762,4 +763,206 @@ html[data-preload] .preloader {
     white-space: nowrap;
     letter-spacing: 0.2em;
   }
+}
+
+/* ------------------------------------------------------------------------
+   Countdowns
+   ------------------------------------------------------------------------ */
+.pixel-digit rect {
+  transform-box: fill-box;
+}
+.hero-counter {
+  --hc-dp: 5px;
+  --hc-dh: 35px;
+  --hc-gap: 4px;
+  --hc-pad: 8px;
+}
+@media (min-width: 640px) {
+  .hero-counter {
+    --hc-dp: 7px;
+    --hc-dh: 49px;
+    --hc-gap: 8px;
+    --hc-pad: 12px;
+  }
+}
+@media (min-width: 1024px) {
+  .hero-counter {
+    --hc-dp: 8px;
+    --hc-dh: 56px;
+    --hc-gap: 10px;
+    --hc-pad: 14px;
+  }
+}
+@media (min-width: 1280px) {
+  .hero-counter {
+    --hc-dp: 10px;
+    --hc-dh: 70px;
+    --hc-gap: 12px;
+    --hc-pad: 16px;
+  }
+}
+
+.big-countdown {
+  --bc-dh: calc(var(--bc-dp) * 7);
+}
+.big-open {
+  font-size: calc(var(--pxu) * 3);
+  letter-spacing: 0.06em;
+}
+@media (min-width: 768px) {
+  .big-open {
+    font-size: calc(var(--pxu) * 6);
+  }
+}
+.digit-hop {
+  display: block;
+  transition: transform 0.16s steps(2);
+}
+.digit-hop:hover {
+  transform: translateY(-4px);
+}
+
+/* Nav mini counter: positioned left of the CTA group so it never shifts layout. */
+.nav-pill {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) translateY(-24px);
+  transition: transform 0.5s var(--ease-expo), opacity 0.2s steps(2);
+}
+.nav-pill[data-visible] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%);
+}
+@media (max-width: 639px) {
+  .nav-cta.has-pill {
+    display: none;
+  }
+  .nav-pill {
+    right: calc(100% + 6px);
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Minimal version
+   ------------------------------------------------------------------------ */
+.min-nav {
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.min-nav[data-scrolled] {
+  background: var(--coconut);
+  box-shadow: 0 1px 0 rgba(104, 27, 43, 0.1);
+}
+.min-counter {
+  --bc-dp: min(calc((100vw - 32px) / 52), 19px);
+}
+.launch-counter {
+  --bc-dp: min(calc((100vw - 32px) / 50), 28px);
+}
+@media (min-width: 1024px) {
+  .launch-counter {
+    --bc-dp: min(calc((100vw - 96px) / 50), 28px);
+  }
+}
+
+/* Stepped yellow highlighter behind a few words. --hl draws it left to right. */
+.hl {
+  --hl: 1;
+  --step: 3px;
+  position: relative;
+  isolation: isolate;
+  white-space: nowrap;
+}
+.hl::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -0.12em;
+  right: -0.12em;
+  top: 0.12em;
+  bottom: 0.02em;
+  background: var(--yellow);
+  transform: scaleX(var(--hl));
+  transform-origin: 0 50%;
+}
+.hl-hover {
+  --hl: 0;
+  white-space: normal;
+  transition: --hl 0s;
+}
+.hl-hover::before {
+  transition: transform 0.24s steps(5);
+}
+.hl-hover:hover::before,
+li:hover > .hl-hover::before {
+  transform: scaleX(1);
+}
+
+.wiggle:hover {
+  animation: wiggle 0.36s steps(1) infinite;
+}
+@keyframes wiggle {
+  0% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.dot-path {
+  background: var(--merlot);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E") 0 0 / 12px 4px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E") 0 0 / 12px 4px repeat-x;
+  opacity: 0.35;
+}
+@media (max-width: 767px) {
+  .dot-path {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='12' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E") 0 0 / 4px 12px repeat-y;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='12' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E") 0 0 / 4px 12px repeat-y;
+  }
+}
+
+.join-text {
+  text-align: left;
+}
+.join-text .join-stack > span {
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.join-text:disabled {
+  opacity: 0.5;
+}
+
+/* Inline thumbnails only where there is no hover; the follower handles fine pointers. */
+@media (hover: hover) and (pointer: fine) {
+  .row-thumb {
+    display: none;
+  }
+  .min-row {
+    grid-template-columns: 1fr auto;
+  }
+  .min-row > .min-w-0 {
+    grid-column: 1;
+  }
+  .min-row > .join {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* The nav pill stays yellow, except on the yellow bar where it flips to merlot. */
+.nav[data-theme] .nav-pill {
+  --btn-bg: var(--yellow);
+  --btn-fg: var(--merlot);
+}
+.nav[data-theme="yellow"] .nav-pill.nav-pill {
+  --btn-bg: var(--merlot);
+  --btn-fg: var(--yellow);
 }

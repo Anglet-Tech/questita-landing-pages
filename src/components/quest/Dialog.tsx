@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef } from "react";
 import { prefersReducedMotion } from "@/lib/gsap";
 import type { FoxFrame } from "@/lib/fox";
 import PixelFox from "../PixelFox";
@@ -9,73 +9,76 @@ const CPS = 40;
 
 /**
  * Classic RPG dialog box: coconut panel, merlot stepped frame, fox portrait,
- * FOX speaker label, text that types on at about 40 characters a second.
+ * speaker label, and text that types on at about 40 characters a second.
+ * Typing writes to the DOM through refs (no React render per character).
  * Click or Space skips to the end. The full text is announced politely.
  */
-export default function Dialog({
+function Dialog({
   text,
   speaker = "Fox",
   frame = "happy",
   visible = true,
-  instant = false,
   className = "",
 }: {
   text: string;
   speaker?: string;
   frame?: FoxFrame;
   visible?: boolean;
-  instant?: boolean;
   className?: string;
 }) {
-  const [shown, setShown] = useState(instant ? text.length : 0);
-  const [prevText, setPrevText] = useState(text);
-  const skipRef = useRef<() => void>(() => {});
-
-  // Restart typing whenever the line changes (state reset during render, the React way).
-  if (prevText !== text) {
-    setPrevText(text);
-    setShown(instant ? text.length : 0);
-  }
+  const typed = useRef<HTMLSpanElement>(null);
+  const rest = useRef<HTMLSpanElement>(null);
+  const caret = useRef<HTMLSpanElement>(null);
+  const skip = useRef<() => void>(() => {});
+  const done = useRef(true);
 
   useEffect(() => {
-    if (instant || !visible || prefersReducedMotion()) {
-      skipRef.current = () => {};
+    const a = typed.current!;
+    const b = rest.current!;
+    const c = caret.current!;
+    let n = 0;
+    const timer: { id?: ReturnType<typeof setInterval> } = {};
+    const paint = () => {
+      a.textContent = text.slice(0, n);
+      b.textContent = text.slice(n);
+      const finished = n >= text.length;
+      done.current = finished;
+      c.classList.toggle("is-done", finished);
+    };
+    const finish = () => {
+      clearInterval(timer.id);
+      n = text.length;
+      paint();
+    };
+    skip.current = finish;
+    if (!visible || prefersReducedMotion()) {
+      finish();
       return;
     }
-    let n = 0;
-    const id = setInterval(() => {
+    paint();
+    timer.id = setInterval(() => {
       n += 1;
-      setShown((s) => {
-        const next = Math.min(text.length, Math.max(s, n));
-        if (next >= text.length) clearInterval(id);
-        return next;
-      });
+      paint();
+      if (n >= text.length) clearInterval(timer.id);
     }, 1000 / CPS);
-    skipRef.current = () => {
-      clearInterval(id);
-      setShown(text.length);
-    };
-    return () => clearInterval(id);
-  }, [text, visible, instant]);
-
-  const done = shown >= text.length || instant;
+    return () => clearInterval(timer.id);
+  }, [text, visible]);
 
   useEffect(() => {
     if (!visible) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.code !== "Space" || done) return;
+      if (e.code !== "Space" || done.current) return;
       const t = e.target as HTMLElement | null;
       if (t && (t.closest("button, a, input, textarea, select") || t.isContentEditable)) return;
       e.preventDefault();
-      skipRef.current();
+      skip.current();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [visible, done]);
+  }, [visible]);
 
-  const reducedOrInstant = instant;
   return (
-    <div className={`q-dialog ${visible ? "is-visible" : ""} ${className}`} onClick={() => skipRef.current()}>
+    <div className={`q-dialog ${visible ? "is-visible" : ""} ${className}`} onClick={() => skip.current()}>
       <div className="q-dialog-frame px-corners">
         <div className="q-dialog-in px-corners flex items-start gap-4 sm:gap-5">
           <div className="w-[62px] shrink-0 sm:w-[82px]">
@@ -89,13 +92,15 @@ export default function Dialog({
               {visible ? text : ""}
             </p>
             <p aria-hidden="true" className="mt-1.5 text-[1rem] font-semibold leading-snug text-merlot sm:text-[1.1875rem]">
-              {reducedOrInstant ? text : text.slice(0, shown)}
-              <span className="invisible">{reducedOrInstant ? "" : text.slice(shown)}</span>
+              <span ref={typed} />
+              <span ref={rest} className="invisible" />
             </p>
           </div>
-          <span className={`q-caret ${done ? "is-done" : ""}`} aria-hidden="true" />
+          <span ref={caret} className="q-caret" aria-hidden="true" />
         </div>
       </div>
     </div>
   );
 }
+
+export default memo(Dialog);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useIdleGSAP, MQ } from "@/lib/gsap";
 import { openContact } from "@/lib/store";
 import PixelFox from "./PixelFox";
 import PixelSeam from "./PixelSeam";
@@ -18,7 +18,7 @@ export default function Footer() {
   const word = useRef<HTMLDivElement>(null);
   const peek = useRef<HTMLDivElement>(null);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
@@ -53,7 +53,7 @@ export default function Footer() {
   return (
     <footer ref={footer} data-nav="dark" className="on-dark relative z-[8] bg-merlot text-coconut">
       <PixelSeam from="coconut" to="merlot" />
-      <div className="mx-auto max-w-[1440px] px-4 pt-[150px] sm:px-8 sm:pt-[220px] lg:px-12 lg:pt-[290px]">
+      <div className="mx-auto max-w-[1440px] px-4 pt-[140px] sm:px-8 sm:pt-[200px] lg:px-12 lg:pt-[250px]">
         <h2 className="sr-only">Questita</h2>
         <div className="relative">
           <div ref={word} aria-hidden="true" className="giant font-px relative flex justify-between leading-[0.9] text-coconut">

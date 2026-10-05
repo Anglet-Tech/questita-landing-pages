@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { LAUNCH_ISO } from "@/config";
-import { useCountdown } from "@/lib/countdown";
-import { gsap, useGSAP, MQ, prefersReducedMotion } from "@/lib/gsap";
+import { useCountdownValue } from "@/lib/countdown";
+import { gsap, useIdleGSAP, MQ, prefersReducedMotion } from "@/lib/gsap";
 import BigCountdown from "./BigCountdown";
 import CalendarButton from "./CalendarButton";
 import PixelFox from "./PixelFox";
@@ -17,12 +17,14 @@ export default function Launch() {
   const section = useRef<HTMLElement>(null);
   const counter = useRef<HTMLDivElement>(null);
   const fox = useRef<HTMLDivElement>(null);
-  const c = useCountdown(LAUNCH_ISO);
+  // Re-render only when the minute (or the launched state) changes.
+  const minute = useCountdownValue(LAUNCH_ISO, (c) => (!c.ready ? "-" : c.launched ? "launched" : c.mm));
+  const launched = minute === "launched";
 
   // Two-frame bounce whenever the minutes change.
   const firstMinute = useRef(true);
   useEffect(() => {
-    if (!c.ready || c.launched) return;
+    if (minute === "-" || launched) return;
     if (firstMinute.current) {
       firstMinute.current = false;
       return;
@@ -37,33 +39,29 @@ export default function Launch() {
     return () => {
       tl.kill();
     };
-  }, [c.mm, c.ready, c.launched]);
-
-  const launched = c.launched;
+  }, [minute, launched]);
 
   // Digits assemble from scattered pixels, scrubbed as the section enters.
-  useGSAP(
+  useIdleGSAP(
     () => {
       if (launched) return;
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
-        const cells = counter.current!.querySelectorAll<SVGGElement>("[data-scatter]");
-        gsap.fromTo(
-          cells,
-          {
-            x: () => gsap.utils.random(-5, 5, 1),
-            y: () => gsap.utils.random(-4, 4, 1),
-            opacity: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-            opacity: 1,
-            ease: "none",
-            stagger: { amount: 0.4, from: "random" },
-            scrollTrigger: { trigger: section.current, start: "top 95%", end: "top 45%", scrub: 0.6 },
-          },
-        );
+        // Attribute tweens only (x, y, fill-opacity): no transform parsing on 280 rects.
+        const cells = counter.current!.querySelectorAll<SVGRectElement>("rect[data-cell]");
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: section.current, start: "top 95%", end: "top 45%", scrub: 0.6 },
+        });
+        cells.forEach((r) => {
+          const x = +r.getAttribute("x")!;
+          const y = +r.getAttribute("y")!;
+          tl.fromTo(
+            r,
+            { attr: { x: x + gsap.utils.random(-5, 5, 1), y: y + gsap.utils.random(-4, 4, 1), "fill-opacity": 0 } },
+            { attr: { x, y, "fill-opacity": 1 }, ease: "none", duration: 0.6 },
+            Math.random() * 0.4,
+          );
+        });
         gsap.from(fox.current, {
           yPercent: 100,
           ease: "none",
@@ -80,6 +78,7 @@ export default function Launch() {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <BigCountdown
           ref={counter}
+          pixels
           className="launch-counter"
           slot={
             // Clip box ends exactly at the digit tops: only ears and eyes show, the

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { gsap, hasFinePointer, prefersReducedMotion } from "@/lib/gsap";
 import { FOX_H, FOX_ROW_SPANS, FOX_W } from "@/lib/fox";
 
@@ -19,7 +19,7 @@ interface Cell {
  * plus tap rings. Reduced motion gets a static staircase window, bottom right.
  * Cells overlapping [data-reveal-exclude] elements are never erased.
  */
-export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
+function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTML
     let canvasRect: DOMRect = canvas.getBoundingClientRect();
 
     const measure = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvasRect = canvas.getBoundingClientRect();
       w = Math.ceil(canvasRect.width);
       h = Math.ceil(canvasRect.height);
@@ -203,10 +203,25 @@ export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTML
     }
     paintSolid();
 
+    // Pointer moves are coalesced: one rect read and one erase per animation frame.
+    let pending: { x: number; y: number } | null = null;
+    let lastRead = 0;
+    let moveRaf = 0;
+    const flush = () => {
+      moveRaf = 0;
+      if (!pending) return;
+      const now = performance.now();
+      if (now - lastRead > 150) {
+        readExcludes();
+        lastRead = now;
+      }
+      erase(pending.x - canvasRect.left, pending.y - canvasRect.top);
+      pending = null;
+    };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
-      readExcludes();
-      erase(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
+      pending = { x: e.clientX, y: e.clientY };
+      if (!moveRaf) moveRaf = requestAnimationFrame(flush);
     };
     const onDown = (e: PointerEvent) => {
       if (e.pointerType === "mouse") return;
@@ -231,6 +246,7 @@ export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTML
 
     return () => {
       gsap.ticker.remove(frame);
+      cancelAnimationFrame(moveRaf);
       host.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerdown", onDown);
       io.disconnect();
@@ -240,3 +256,5 @@ export default function PixelReveal({ hostRef }: { hostRef: React.RefObject<HTML
 
   return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" />;
 }
+
+export default memo(PixelReveal);

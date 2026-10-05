@@ -29,6 +29,18 @@ Useful during development:
 - Type `fox` anywhere outside a form field and every fox on the page winks.
 - Turn on "reduce motion" in your OS to check the reduced-motion version: no preloader, no smooth scroll, no pins or scrubs, static pixel windows.
 
+## Performance notes
+
+Measure performance on the production build (`npm run build`, then serve `out/`), not on `npm run dev`. Dev mode runs React in development mode with extra checks and is roughly four times slower, so frame timings there are not representative.
+
+What keeps the pages fast:
+
+- Pixel art is drawn as one SVG `<path>` per colour (fox sprites, countdown digits), not one element per pixel. Only the two foxes that pop in pixel by pixel (preloader and hero) render individual rects, and that pop animates SVG attributes rather than transforms.
+- Countdown digits re-form with a few temporary rects and settle back into a single path. Components subscribe to the derived countdown value they need (`useCountdownValue`), so a section re-renders on the minute, not every second.
+- Lenis runs first in the GSAP ticker, so its `scrollTo` never forces a synchronous layout, and hit-testing is skipped while it is scrolling.
+- Below-the-fold GSAP setup runs in idle callbacks (`useIdleGSAP`) after hydration; the quest map is generated in an idle slot and only redraws when something moves.
+- Canvases cap the device pixel ratio at 1.5 and pause when off screen.
+
 ## Build
 
 ```bash

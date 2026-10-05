@@ -59,3 +59,25 @@ export function registerJumper(fn: Jumper | null) {
 export function jumpTo(target: StopTarget): boolean {
   return jumper ? jumper(target) : false;
 }
+
+// ---- The Route stretch: whether the fox is on it, and how many signs are reached.
+let route = { active: false, reached: 0 };
+const routeListeners = new Set<() => void>();
+export function setRoute(active: boolean, reached: number) {
+  if (route.active === active && route.reached === reached) return;
+  route = { active, reached };
+  routeListeners.forEach((fn) => fn());
+}
+const serverRoute = { active: false, reached: 0 };
+export function useRoute() {
+  return useSyncExternalStore(
+    (fn) => {
+      routeListeners.add(fn);
+      return () => {
+        routeListeners.delete(fn);
+      };
+    },
+    () => route,
+    () => serverRoute,
+  );
+}

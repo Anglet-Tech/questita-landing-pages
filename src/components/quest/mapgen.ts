@@ -170,11 +170,19 @@ function generate(): QuestMapData {
 
   const { tilePath, whyAt, boardAt, nightAt } = layoutTiles();
 
-  const corridor = (x: number, y: number) => {
-    const p = { x: x + 0.5, y: y + 0.5 };
-    for (let i = 0; i < tilePath.length - 1; i++) if (distToSegment(p, tilePath[i], tilePath[i + 1]) < 1.1) return true;
-    return false;
-  };
+  // Tiles within 1.1 of the path, computed once (the draw passes look it up).
+  const cor = new Uint8Array(MAP_W * MAP_H);
+  for (let i = 0; i < tilePath.length - 1; i++) {
+    const a = tilePath[i];
+    const b = tilePath[i + 1];
+    const x0 = Math.max(0, Math.floor(Math.min(a.x, b.x) - 2));
+    const x1 = Math.min(MAP_W - 1, Math.ceil(Math.max(a.x, b.x) + 2));
+    const y0 = Math.max(0, Math.floor(Math.min(a.y, b.y) - 2));
+    const y1 = Math.min(MAP_H - 1, Math.ceil(Math.max(a.y, b.y) + 2));
+    for (let ty = y0; ty <= y1; ty++)
+      for (let tx = x0; tx <= x1; tx++) if (distToSegment({ x: tx + 0.5, y: ty + 0.5 }, a, b) < 1.1) cor[ty * MAP_W + tx] = 1;
+  }
+  const corridor = (x: number, y: number) => cor[y * MAP_W + x] === 1;
 
   const canvas = document.createElement("canvas");
   canvas.width = WORLD_W;

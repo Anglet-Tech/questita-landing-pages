@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useIdleGSAP, MQ } from "@/lib/gsap";
 import { asset } from "@/lib/asset";
 import PixelSeam from "./PixelSeam";
 
@@ -20,7 +20,7 @@ export default function Who() {
   const cursor = useRef<HTMLSpanElement>(null);
   const icon = useRef<HTMLDivElement>(null);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {

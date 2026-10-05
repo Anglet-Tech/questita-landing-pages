@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, useGSAP, MQ, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, useIdleGSAP, MQ, prefersReducedMotion } from "@/lib/gsap";
 import { openContact } from "@/lib/store";
 import PixelFox from "./PixelFox";
 import PixelSeam from "./PixelSeam";
@@ -17,7 +17,7 @@ export default function Partners() {
   const stub = useRef<HTMLButtonElement>(null);
   const tearing = useRef(false);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
@@ -76,11 +76,11 @@ export default function Partners() {
   };
 
   return (
-    <section id="contact" ref={section} data-nav="light" aria-labelledby="contact-title" className="relative z-[7] bg-coconut pb-32 pt-[calc(var(--nav-h)+64px)]">
+    <section id="contact" ref={section} data-nav="light" aria-labelledby="contact-title" className="relative z-[7] bg-coconut py-14 lg:py-28">
       <PixelSeam from="yellow" to="coconut" />
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12" style={{ perspective: "1400px" }}>
         <div ref={ticket} className="ticket relative flex flex-col lg:flex-row" style={{ filter: "drop-shadow(10px 14px 18px rgba(104,27,43,.18))" }}>
-          <div className="px-corners on-dark relative flex-1 bg-merlot p-8 text-coconut sm:p-12 lg:p-16" style={{ "--step": "8px" } as React.CSSProperties}>
+          <div className="px-corners on-dark relative flex-1 bg-merlot p-7 text-coconut sm:p-10 lg:p-14" style={{ "--step": "8px" } as React.CSSProperties}>
             <h2 id="contact-title" className="max-w-[14ch] text-[clamp(2.4rem,5vw,4.6rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
               Want to be part of the plan?
             </h2>
@@ -109,7 +109,7 @@ export default function Partners() {
             aria-label="Tear off your spot"
             className="stub relative text-left lg:w-[300px]"
           >
-            <span className="stub-inner px-corners on-dark flex h-full flex-col justify-between gap-8 bg-merlot p-8 text-coconut sm:p-10" style={{ "--step": "8px" } as React.CSSProperties}>
+            <span className="stub-inner px-corners on-dark flex h-full flex-row items-center justify-between gap-6 bg-merlot p-7 text-coconut sm:p-8 lg:flex-col lg:items-start lg:gap-8 lg:p-10" style={{ "--step": "8px" } as React.CSSProperties}>
               <span className="w-[82px]">
                 <PixelFox frame="wink" />
               </span>

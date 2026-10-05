@@ -101,7 +101,7 @@ export function PartnersLine() {
   const section = useRef<HTMLElement>(null);
   useGSAP(() => minimalReveal(section.current!), { scope: section });
   return (
-    <section id="contact" ref={section} aria-labelledby="min-partners" className="mx-auto max-w-[1100px] px-4 py-32 sm:px-8">
+    <section id="contact" ref={section} aria-labelledby="min-partners" className="mx-auto max-w-[1100px] px-4 py-14 sm:px-8 lg:py-24">
       <h2 id="min-partners" data-mh className="max-w-[24ch] text-[clamp(1.8rem,3.6vw,2.8rem)] font-extrabold leading-[1.1] tracking-[-0.03em] text-merlot">
         Run a place, brand or product that belongs in a Cairo plan?
       </h2>

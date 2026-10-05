@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { ScrollTrigger, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { ScrollTrigger, useIdleGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 const COLORS = {
   merlot: "#681B2B",
@@ -25,7 +25,7 @@ export default function PixelSeam({ to, from }: { to: SeamColor; from?: SeamColo
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const cv = canvas.current!;
       const ctx = cv.getContext("2d")!;
@@ -37,7 +37,7 @@ export default function PixelSeam({ to, from }: { to: SeamColor; from?: SeamColo
       const reduced = prefersReducedMotion();
 
       const measure = () => {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         w = wrap.current!.offsetWidth;
         size = w < 640 ? 20 : w < 1280 ? 28 : 32;
         cols = Math.ceil(w / size);

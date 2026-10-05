@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gsap, SplitText, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, SplitText, useIdleGSAP, MQ } from "@/lib/gsap";
 import { asset } from "@/lib/asset";
 import type { FoxFrame } from "@/lib/fox";
 import PixelFox from "./PixelFox";
@@ -21,7 +21,7 @@ export default function Why() {
   const windows = useRef<HTMLImageElement>(null);
   const [frame, setFrame] = useState<FoxFrame>("oops");
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       let happy = false;

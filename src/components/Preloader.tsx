@@ -36,7 +36,7 @@ export default function Preloader() {
 
       const cv = canvas.current!;
       const ctx = cv.getContext("2d")!;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = window.innerWidth;
       const h = window.innerHeight;
       cv.width = Math.ceil(w * dpr);
@@ -111,7 +111,7 @@ export default function Preloader() {
       <div ref={panel} className="absolute inset-0 bg-coconut">
         <div className="absolute inset-0 grid place-items-center">
           <div ref={foxWrap} className="invisible w-[246px] sm:w-[369px]">
-            <PixelFox frame={frame} />
+            <PixelFox frame={frame} pixels />
           </div>
         </div>
         <span

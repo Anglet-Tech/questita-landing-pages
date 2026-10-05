@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, idle, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { isScrollLocked, onScrollLock, scrollToTarget, setLenis, winkAllFoxes } from "@/lib/store";
 
 /**
@@ -20,7 +20,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       lenis = new Lenis({ autoRaf: false, lerp: 0.11, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
       tick = (time: number) => lenis?.raf(time * 1000);
-      gsap.ticker.add(tick);
+      // Prioritised: Lenis scrolls first in each frame, before GSAP writes any
+      // styles, so window.scrollTo never forces a synchronous layout.
+      gsap.ticker.add(tick, false, true);
       gsap.ticker.lagSmoothing(0);
       setLenis(lenis);
       if (isScrollLocked()) lenis.stop();
@@ -62,6 +64,14 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     };
     window.addEventListener("keydown", onKey);
 
+    // Sections below the fold set up in idle callbacks (useIdleGSAP). This one is
+    // registered last (parent effects run after children), so it runs after all
+    // of them: put every trigger in order and measure once.
+    const cancelIdle = idle(() => {
+      ScrollTrigger.sort();
+      ScrollTrigger.refresh();
+    }, 1500);
+
     // Fonts change line breaks and heights: re-measure every trigger once they land.
     let cancelled = false;
     document.fonts?.ready.then(() => {
@@ -72,6 +82,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
     return () => {
       cancelled = true;
+      cancelIdle();
       document.removeEventListener("click", onClick);
       window.removeEventListener("keydown", onKey);
       offLock();

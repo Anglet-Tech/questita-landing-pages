@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, memo, useImperativeHandle, useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
 
 const ITEMS = [
@@ -107,4 +107,4 @@ const Marquee = forwardRef<HTMLDivElement>(function Marquee(_props, ref) {
   );
 });
 
-export default Marquee;
+export default memo(Marquee);

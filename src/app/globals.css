@@ -111,6 +111,11 @@ html.lenis body {
 .lenis.lenis-stopped {
   overflow: clip;
 }
+/* While Lenis is moving the page, skip hit-testing and hover churn under a still pointer. */
+.lenis.lenis-scrolling main,
+.lenis.lenis-scrolling footer {
+  pointer-events: none;
+}
 
 /* Skip link */
 .skip-link {

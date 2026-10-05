@@ -202,7 +202,7 @@ export default function Hero() {
             data-reveal-fox
             className="w-[123px] cursor-pointer sm:w-[205px] md:w-[287px] lg:w-[451px] xl:w-[533px]"
           >
-            <PixelFox frame={frame} trackEyes followHead />
+            <PixelFox frame={frame} trackEyes followHead pixels />
           </button>
         </div>
       </div>

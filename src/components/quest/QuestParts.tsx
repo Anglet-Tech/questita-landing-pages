@@ -14,8 +14,9 @@ import PixelFox from "../PixelFox";
 import { Roll } from "../ui";
 import { BOARD_LINE, HOW_STEPS, NIGHT_LINE, PARTY, QUESTS, SAFETY_ITEMS, WHY_LINES } from "./content";
 import { buildQuestMap, TILE } from "./mapgen";
-import { earnXp, jumpTo, useXp, XP_ORDER, type StopTarget } from "./questStore";
+import { earnXp, jumpTo, useRoute, useXp, XP_ORDER, type StopTarget } from "./questStore";
 import { Inventory, PartySelect, QuestPopup } from "./Screens";
+import { Vignette } from "./Vignettes";
 
 function go(target: StopTarget, fallback: string) {
   if (!jumpTo(target)) scrollToTarget(fallback);
@@ -145,6 +146,7 @@ function HudTimer() {
 
 export function QuestHud() {
   const xp = useXp();
+  const route = useRoute();
   const [onMap, setOnMap] = useState(false);
   const [menu, setMenu] = useState(false);
   const hud = useRef<HTMLDivElement>(null);
@@ -221,7 +223,16 @@ export function QuestHud() {
         </div>
       )}
 
-      <div className={`q-xp ${onMap ? "is-on" : ""}`} aria-label={`Experience: ${xp * 10} of 100`} role="img">
+      <div className={`q-route ${onMap && route.active ? "is-on" : ""}`} role="img" aria-label={`The route: ${route.reached} of 4 signposts reached`}>
+        <span className="font-px t-px1 text-yellow">The route</span>
+        <span className="flex gap-1.5">
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className={`q-route-cell ${i < route.reached ? "is-full" : ""}`} />
+          ))}
+        </span>
+      </div>
+
+      <div className={`q-xp ${onMap && !route.active ? "is-on" : ""}`} aria-label={`Experience: ${xp * 10} of 100`} role="img">
         <span className="font-px t-px1 text-coconut">XP</span>
         <span className="flex gap-1">
           {XP_ORDER.map((id, i) => (
@@ -286,14 +297,9 @@ export function PlainStops() {
         </div>
         <div id="plain-how" tabIndex={-1}>
           <h2 className="q-plain-h">Stop 3: The route</h2>
-          <div className="flex flex-col gap-4">
-            {HOW_STEPS.map((h) => (
-              <Panel key={h.n} speaker={`Signpost ${h.n}`} frame={h.fox}>
-                <h3 className="font-extrabold">
-                  {h.n} {h.title}
-                </h3>
-                <p>{h.body}</p>
-              </Panel>
+          <div className="q-route-grid">
+            {HOW_STEPS.map((h, i) => (
+              <Vignette key={h.n} index={i} />
             ))}
           </div>
         </div>
@@ -458,7 +464,7 @@ export function SavePoint() {
 
 export function QuestPartners() {
   return (
-    <section id="contact" aria-labelledby="qp-title" className="on-dark bg-merlot px-4 py-28 text-coconut sm:px-8">
+    <section id="contact" aria-labelledby="qp-title" className="on-dark bg-merlot px-4 py-14 text-coconut sm:px-8 lg:py-24">
       <div className="mx-auto max-w-[1200px]">
         <h2 id="qp-title" className="max-w-[16ch] text-[clamp(2rem,4.6vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.035em]">
           Want to be part of the plan?
@@ -485,7 +491,7 @@ export function Credits() {
       mm.add(MQ.motion, () => {
         gsap.fromTo(
           list.current,
-          { y: () => window.innerHeight },
+          { y: () => 120 },
           {
             // Roll up from below and settle centred (never under the HUD).
             y: () => Math.max(96, (window.innerHeight - list.current!.offsetHeight) / 2),

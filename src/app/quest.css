@@ -164,33 +164,6 @@
     margin-top: -38px;
   }
 }
-.q-sign {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: translate(-50%, -100%);
-  perspective: 200px;
-}
-.q-sign-board {
-  display: block;
-  padding: 6px 8px;
-  background: var(--yellow);
-  color: var(--merlot);
-  outline: 3px solid var(--merlot);
-  transform-origin: 50% 100%;
-  transform: rotateX(90deg);
-  transition: transform 0.36s steps(4);
-}
-.q-sign-post {
-  display: block;
-  width: 6px;
-  height: 22px;
-  background: var(--merlot);
-}
-.q-sign.is-up .q-sign-board {
-  transform: none;
-}
 .q-bang {
   position: absolute;
   transform: translate(-50%, -100%) scale(0);
@@ -361,7 +334,7 @@
 
 /* Credits roll */
 .q-credits {
-  height: 180vh;
+  height: 140vh;
 }
 .q-credits-view {
   position: sticky;
@@ -426,5 +399,286 @@
     position: static;
     height: auto;
     padding: 96px 0;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   The Route: big signposts, vignettes, scene frames, HUD tracker
+   ------------------------------------------------------------------------ */
+.q-bigsign {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+}
+.q-bigsign-clip {
+  overflow: hidden;
+  padding: 6px 6px 0;
+}
+.q-bigsign-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(105%);
+  transform-origin: 50% 100%;
+  transition: transform 0.33s steps(3);
+}
+.q-bigsign.is-risen .q-bigsign-in {
+  transform: none;
+}
+.q-bigsign.is-current .q-bigsign-in {
+  animation: q-wobble 0.3s steps(2) 0.34s 1;
+}
+@keyframes q-wobble {
+  0% {
+    rotate: -5deg;
+  }
+  50% {
+    rotate: 5deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+.q-bigsign-board {
+  width: 92px;
+  height: 66px;
+}
+.q-bigsign-num {
+  font-size: calc(var(--pxu) * 3);
+  color: var(--merlot);
+  line-height: 1;
+}
+.q-bigsign-post {
+  display: block;
+  width: 12px;
+  height: 38px;
+  background: var(--merlot);
+}
+.q-bigsign-ground {
+  display: block;
+  width: 48px;
+  height: 6px;
+  background: rgba(104, 27, 43, 0.35);
+}
+.q-bigsign-label {
+  position: absolute;
+  top: calc(100% + 8px);
+  padding: 4px 8px;
+  background: var(--yellow);
+  color: var(--merlot);
+  outline: 3px solid var(--merlot);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.2s steps(2), transform 0.2s steps(2);
+}
+.q-bigsign.is-passed .q-bigsign-label {
+  opacity: 1;
+  transform: none;
+}
+@media (max-width: 767px) {
+  .q-bigsign-board {
+    width: 64px;
+    height: 48px;
+  }
+  .q-bigsign-num {
+    font-size: calc(var(--pxu) * 2);
+  }
+  .q-bigsign-post {
+    width: 8px;
+    height: 26px;
+  }
+}
+
+/* Vignette cards */
+.q-vig-wrap {
+  position: absolute;
+  z-index: 26;
+  left: 0;
+  top: 0;
+  width: min(420px, calc(100% - 48px));
+  visibility: hidden;
+}
+.q-vig-wrap.is-on {
+  visibility: visible;
+}
+.q-vig {
+  display: none;
+}
+.q-vig.is-on {
+  display: block;
+  animation: q-vig-in 0.36s steps(3);
+}
+@keyframes q-vig-in {
+  from {
+    transform: translateY(18px) scale(0.96);
+    opacity: 0;
+  }
+}
+@media (max-width: 767px) {
+  .q-vig-wrap {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto;
+    transform: none !important;
+  }
+}
+.q-vignette {
+  --frame-w: 4px;
+  filter: drop-shadow(6px 8px 0 rgba(104, 27, 43, 0.25));
+}
+.q-vignette-in {
+  padding: 14px;
+}
+.q-vignette-scene {
+  --step: 4px;
+  overflow: hidden;
+  background: var(--merlot);
+  padding: 3px;
+}
+.q-vscene {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 96 / 54;
+  image-rendering: pixelated;
+}
+.q-vignette-copy {
+  padding: 14px 6px 4px;
+}
+.q-vignette-title {
+  margin-top: 6px;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--merlot);
+}
+.text-yellow-shadow {
+  display: inline-block;
+  padding: 0 0.12em;
+  background: var(--yellow);
+}
+@media (max-width: 767px) {
+  .q-vignette-in {
+    padding: 10px;
+  }
+  .q-vscene {
+    aspect-ratio: 96 / 44;
+    object-fit: cover;
+  }
+  .q-vignette-copy {
+    padding: 10px 4px 2px;
+  }
+}
+.q-vtext {
+  font-family: var(--font-px);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* 4-frame loops, steps timing, pure CSS */
+.q-vf {
+  visibility: hidden;
+  animation: q-vf 1.6s steps(1) infinite;
+}
+.q-vf-0 {
+  animation-delay: 0s;
+}
+.q-vf-1 {
+  animation-delay: -1.2s;
+}
+.q-vf-2 {
+  animation-delay: -0.8s;
+}
+.q-vf-3 {
+  animation-delay: -0.4s;
+}
+@keyframes q-vf {
+  0% {
+    visibility: visible;
+  }
+  25%,
+  100% {
+    visibility: hidden;
+  }
+}
+.q-vig:not(.is-on) .q-vf {
+  animation-play-state: paused;
+}
+
+/* HUD: The Route tracker */
+.q-route {
+  position: fixed;
+  left: 24px;
+  bottom: 20px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--merlot);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.2s steps(2), transform 0.3s steps(3), visibility 0s 0.3s;
+  pointer-events: none;
+}
+.q-route.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.2s steps(2), transform 0.3s steps(3), visibility 0s;
+}
+.q-route-cell {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--yellow);
+  transition: background-color 0.2s steps(2);
+}
+.q-route-cell.is-full {
+  background: var(--yellow);
+}
+@media (max-width: 767px) {
+  .q-route {
+    left: 12px;
+    bottom: auto;
+    top: 68px;
+    padding: 8px 10px;
+  }
+  .q-route-cell {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Reduced motion: the route as a static grid, frame 1 of each scene */
+.q-route-grid {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .q-route-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .q-vf {
+    animation: none;
+    visibility: hidden;
+  }
+  .q-vf-0 {
+    visibility: visible;
+  }
+  .q-bigsign-in,
+  .q-vig.is-on,
+  .q-bigsign.is-current .q-bigsign-in {
+    animation: none;
+    transition: none;
   }
 }

@@ -13,8 +13,8 @@ import PixelDigit, { PixelColon } from "./PixelDigit";
  */
 const BigCountdown = forwardRef<
   HTMLDivElement,
-  { className?: string; slot?: React.ReactNode; hop?: boolean; openText?: string }
->(function BigCountdown({ className = "", slot, hop = false, openText = "The board is open" }, ref) {
+  { className?: string; slot?: React.ReactNode; hop?: boolean; openText?: string; pixels?: boolean }
+>(function BigCountdown({ className = "", slot, hop = false, openText = "The board is open", pixels = false }, ref) {
   const root = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => root.current as HTMLDivElement, []);
   const c = useCountdown(LAUNCH_ISO);
@@ -47,7 +47,7 @@ const BigCountdown = forwardRef<
               <div className="flex gap-[var(--bc-dp)] text-[length:var(--bc-dh)]">
                 {p.v.split("").map((ch, j) => (
                   <span key={j} className={hop ? "digit-hop" : undefined}>
-                    <PixelDigit char={ch} />
+                    <PixelDigit char={ch} pixels={pixels} />
                   </span>
                 ))}
               </div>

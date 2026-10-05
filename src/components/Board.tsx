@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useIdleGSAP, MQ } from "@/lib/gsap";
 import QuestCard, { type Quest } from "./QuestCard";
 import { Bubble } from "./ui";
 
@@ -30,7 +30,7 @@ export default function Board() {
   const pinWrap = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.desktop, () => {

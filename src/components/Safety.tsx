@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP, MQ } from "@/lib/gsap";
 import { asset } from "@/lib/asset";
 import { stairClip } from "@/lib/stairs";
 import PixelFox from "./PixelFox";
@@ -42,7 +42,7 @@ export default function Safety() {
   const stairs = useRef<HTMLDivElement>(null);
   const [pref, setPref] = useState(false);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {

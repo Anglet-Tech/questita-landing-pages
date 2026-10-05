@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP, MQ } from "@/lib/gsap";
 import type { FoxFrame } from "@/lib/fox";
 import PixelFox from "./PixelFox";
 import PixelSeam from "./PixelSeam";
@@ -31,7 +31,7 @@ export default function How() {
   const listLine = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState<FoxFrame>("wow");
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
 

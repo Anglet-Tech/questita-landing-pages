@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, ScrollTrigger, SplitText, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, ScrollTrigger, SplitText, useIdleGSAP, MQ } from "@/lib/gsap";
 import { asset } from "@/lib/asset";
 import PixelSeam from "./PixelSeam";
 
@@ -17,7 +17,7 @@ export default function Belief() {
   const street = useRef<HTMLDivElement>(null);
   const lights = useRef<HTMLImageElement>(null);
 
-  useGSAP(
+  useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {

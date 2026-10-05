@@ -86,3 +86,17 @@ export function countdownLabel(c: Countdown): string {
   if (c.launched) return "The board is open.";
   return `The board opens in ${c.days} days, ${c.hours} hours and ${c.minutes} minutes.`;
 }
+
+/**
+ * Subscribe to one derived value of the countdown (a string, number or
+ * boolean). The component re-renders only when that value changes, not every
+ * second.
+ */
+export function useCountdownValue<T extends string | number | boolean>(iso: string, select: (c: Countdown) => T): T {
+  const target = new Date(iso).getTime();
+  return useSyncExternalStore(
+    subscribe,
+    () => select(computeCountdown(target, nowSec())),
+    () => select(computeCountdown(target, null)),
+  );
+}

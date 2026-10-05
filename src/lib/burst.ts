@@ -32,7 +32,7 @@ export function pixelBurst(x: number, y: number, opts: BurstOptions = {}) {
   } = opts;
 
   const canvas = document.createElement("canvas");
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   const w = window.innerWidth;
   const h = window.innerHeight;
   canvas.width = w * dpr;

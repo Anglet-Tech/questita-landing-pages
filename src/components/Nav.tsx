@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, SplitText, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, ScrollTrigger, SplitText, useIdleGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { asset } from "@/lib/asset";
 import { openContact, scrollToTarget, setScrollLock } from "@/lib/store";
 import PixelFox from "./PixelFox";
@@ -30,7 +30,7 @@ export default function Nav() {
   const [pill, setPill] = useState(false);
 
   // Section-aware colour and active link, driven by ScrollTrigger toggles.
-  useGSAP(
+  useIdleGSAP(
     () => {
       const el = nav.current!;
       const moveMarker = (id: string | null) => {

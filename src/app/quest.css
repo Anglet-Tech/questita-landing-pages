@@ -682,3 +682,55 @@
     transition: none;
   }
 }
+
+/* The party / crew (/quest/) */
+.crew-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+}
+.crew-grid > li:first-child,
+.crew-grid > li:nth-child(2) {
+  grid-column: span 1;
+}
+@media (max-width: 639px) {
+  .crew-grid > li:first-child,
+  .crew-grid > li:nth-child(2) {
+    grid-column: span 2;
+  }
+}
+@media (min-width: 900px) {
+  .crew-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .crew-grid > li {
+    grid-column: span 2;
+  }
+  .crew-grid > li.crew-lead {
+    grid-column: span 3;
+  }
+}
+.crew-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 3px solid var(--merlot);
+  background: var(--coconut);
+  cursor: pointer;
+  transition: transform 0.15s steps(2);
+}
+.crew-card:hover {
+  transform: translateY(-3px);
+}
+.crew-card.is-selected {
+  box-shadow: 0 0 0 4px var(--yellow), 0 0 0 7px var(--merlot);
+}
+.crew-tag {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px 8px;
+  background: var(--merlot);
+  color: var(--yellow);
+}

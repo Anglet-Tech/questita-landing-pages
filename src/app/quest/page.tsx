@@ -3,6 +3,7 @@ import "../quest.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import ContactModal from "@/components/ContactModal";
 import QuestMap from "@/components/quest/QuestMap";
+import Crew from "@/components/quest/Crew";
 import { Credits, PlainStops, QuestHud, QuestPartners, QuestTitle, ReducedExtras, ReducedStrip, SavePoint } from "@/components/quest/QuestParts";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function QuestPage() {
           <PlainStops />
           <ReducedExtras />
           <SavePoint />
+          <Crew />
           <QuestPartners />
         </main>
         <Credits />

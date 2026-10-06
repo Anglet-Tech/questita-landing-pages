@@ -13,6 +13,7 @@ import PixelDigit, { PixelColon } from "../PixelDigit";
 import PixelFox from "../PixelFox";
 import { Roll } from "../ui";
 import { BOARD_LINE, HOW_STEPS, NIGHT_LINE, PARTY, QUESTS, SAFETY_ITEMS, WHY_LINES } from "./content";
+import { CREATORS } from "@/lib/creators";
 import { buildQuestMap, TILE } from "./mapgen";
 import { earnXp, jumpTo, useRoute, useXp, XP_ORDER, type StopTarget } from "./questStore";
 import { Inventory, PartySelect, QuestPopup } from "./Screens";
@@ -325,6 +326,12 @@ export function PlainStops() {
             ))}
           </ul>
           <p>Not a dating app. Not another feed to scroll. Just plans, with people.</p>
+          <h2>The party: the crew behind the quest.</h2>
+          <ul>
+            {CREATORS.map((c) => (
+              <li key={c.stem}>{c.role ? `${c.name}, ${c.role}` : c.name}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
@@ -493,8 +500,12 @@ export function Credits() {
           list.current,
           { y: () => 120 },
           {
-            // Roll up from below and settle centred (never under the HUD).
-            y: () => Math.max(96, (window.innerHeight - list.current!.offsetHeight) / 2),
+            // Roll up from below and settle centred; if the roll is taller than
+            // the screen, settle so the last line and the waving fox are in view.
+            y: () => {
+              const h = list.current!.offsetHeight;
+              return Math.min(Math.max(96, (window.innerHeight - h) / 2), window.innerHeight - h - 32);
+            },
             ease: "none",
             scrollTrigger: {
               trigger: footer.current,
@@ -516,10 +527,21 @@ export function Credits() {
   return (
     <footer ref={footer} className="q-credits on-dark relative bg-merlot text-coconut">
       <div className="q-credits-view">
-        <div ref={list} className="flex flex-col items-center gap-10 px-4 text-center">
+        <div ref={list} className="flex flex-col items-center gap-7 px-4 text-center">
           <p className="font-px t-px1 text-coconut-78">The end, for now</p>
           <p className="q-logo font-px">Questita</p>
           <p className="max-w-[22ch] text-[1.5rem] font-extrabold leading-tight">For the people who make the big city feel smaller.</p>
+          <div>
+            <p className="font-px t-px1 text-yellow">Created by</p>
+            <ul className="mt-4 flex flex-col gap-2">
+              {CREATORS.map((c) => (
+                <li key={c.stem} className="text-[1.125rem] font-bold">
+                  {c.name}
+                  {c.role && <span className="font-px t-px1 ml-3 text-coconut-78">{c.role}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
           <nav aria-label="Footer">
             <ul className="flex flex-col items-center gap-3">
               <li>

@@ -983,3 +983,61 @@ li:hover > .hl-hover::before {
     margin-top: calc(var(--bc-dp) * 9);
   }
 }
+
+/* About the creators (/) */
+.cr-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .cr-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 32px 28px;
+  }
+  .cr-card {
+    grid-column: span 2;
+  }
+  .cr-card.cr-big {
+    grid-column: span 3;
+  }
+}
+.cr-card {
+  perspective: 900px;
+  rotate: var(--tilt, 0deg);
+  transition: rotate 0.4s var(--ease-expo);
+}
+.cr-card:hover {
+  rotate: 0deg;
+}
+.cr-tilt {
+  transform-style: preserve-3d;
+}
+
+/* Made by (/minimal/) */
+.made-thumb {
+  display: none;
+}
+@media (hover: none) {
+  .made-thumb {
+    display: block;
+  }
+}
+.made-row:focus-visible {
+  outline: 3px solid var(--merlot);
+}
+.made-follower {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s steps(2), visibility 0s 0.18s;
+}
+.made-follower[data-on] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.18s steps(2), visibility 0s;
+}
+@media (hover: none) {
+  .made-follower {
+    display: none;
+  }
+}

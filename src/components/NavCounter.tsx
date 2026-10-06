@@ -23,7 +23,7 @@ export default function NavCounter({ visible }: { visible: boolean }) {
       ) : (
         <span className="t-px1 tracking-[0.1em]">
           {days} {c.hh}:{c.mm}
-          <span className="hidden sm:inline">:{c.ss}</span>
+          <span className="hidden min-[1180px]:inline">:{c.ss}</span>
         </span>
       )}
     </button>

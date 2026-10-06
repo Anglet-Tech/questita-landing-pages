@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { gsap, useIdleGSAP, MQ } from "@/lib/gsap";
 import { openContact } from "@/lib/store";
 import PixelFox from "./PixelFox";
-import PixelSeam from "./PixelSeam";
 import { Roll } from "./ui";
 
 const LETTERS = "QUESTITA".split("");
@@ -52,7 +51,6 @@ export default function Footer() {
 
   return (
     <footer ref={footer} data-nav="dark" className="on-dark relative z-[8] bg-merlot text-coconut">
-      <PixelSeam from="coconut" to="merlot" />
       <div className="mx-auto max-w-[1440px] px-4 pt-[140px] sm:px-8 sm:pt-[200px] lg:px-12 lg:pt-[250px]">
         <h2 className="sr-only">Questita</h2>
         <div className="relative">

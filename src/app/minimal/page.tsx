@@ -7,6 +7,7 @@ import Problem from "@/components/minimal/Problem";
 import BoardList from "@/components/minimal/BoardList";
 import Steps from "@/components/minimal/Steps";
 import { MinimalFooter, PartnersLine, SafetyList, WhoMinimal } from "@/components/minimal/MinimalRest";
+import MadeBy from "@/components/minimal/MadeBy";
 
 export const metadata: Metadata = {
   title: "Questita",
@@ -32,6 +33,7 @@ export default function MinimalPage() {
           <SafetyList />
           <WhoMinimal />
           <PartnersLine />
+          <MadeBy />
         </main>
         <MinimalFooter />
         <ContactModal />

@@ -10,6 +10,7 @@ import Safety from "@/components/Safety";
 import Who from "@/components/Who";
 import Launch from "@/components/Launch";
 import Partners from "@/components/Partners";
+import Creators from "@/components/Creators";
 import Footer from "@/components/Footer";
 import ContactModal from "@/components/ContactModal";
 
@@ -31,6 +32,7 @@ export default function Home() {
         <Who />
         <Launch />
         <Partners />
+        <Creators />
       </main>
       <Footer />
       <ContactModal />

@@ -1,0 +1,479 @@
+/* ------------------------------------------------------------------------
+   The Poster Wall (/wall/). Imported by the wall page only. Every class is
+   prefixed wl- so nothing leaks into the other routes.
+   ------------------------------------------------------------------------ */
+
+.wl-root {
+  --wl-nav: 56px;
+  --wl-gut: 0px;
+  position: relative;
+  background: var(--coconut);
+  color: var(--body);
+  /* Tilted posters must never widen the page. clip (not hidden) keeps sticky working. */
+  overflow-x: clip;
+}
+@media (min-width: 1024px) {
+  .wl-root {
+    --wl-nav: 64px;
+    --wl-gut: 14px;
+  }
+}
+
+/* The wall: coconut with pixel bricks, on one fixed layer behind everything. */
+.wl-bricks {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--coconut);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32' shape-rendering='crispEdges'%3E%3Cg fill='%23681B2B' fill-opacity='0.07'%3E%3Crect width='64' height='2'/%3E%3Crect y='16' width='64' height='2'/%3E%3Crect x='0' y='2' width='2' height='14'/%3E%3Crect x='32' y='18' width='2' height='14'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 32px;
+}
+/* Paper grain over the posters: one fixed, composited layer, never repainted on scroll. */
+.wl-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background-size: 128px 128px;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+/* ---- Posters ------------------------------------------------------------ */
+.wl-stack {
+  position: relative;
+  z-index: 1;
+}
+.wl-stack > main {
+  display: contents;
+}
+.wl-anchor {
+  display: block;
+  height: 0;
+  scroll-margin-top: 0;
+  outline: none;
+}
+.wl-poster {
+  position: relative;
+  margin-inline: var(--wl-gut);
+  transform-origin: 50% 0%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wl-poster[data-stick] {
+    position: sticky;
+    top: var(--stick, 0px);
+  }
+  .wl-poster {
+    will-change: transform;
+  }
+}
+.wl-poster.wl-covered {
+  visibility: hidden;
+}
+.wl-paper {
+  position: relative;
+  background: var(--paper, var(--merlot));
+  transform-origin: 50% calc(100% - 50svh);
+}
+/* Paper thickness: a two-band hard shadow on the wall just above the top edge. */
+.wl-poster:not([data-first]) .wl-paper::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(36, 27, 31, 0) 0 2px, rgba(36, 27, 31, 0.06) 2px 6px, rgba(36, 27, 31, 0.13) 6px 10px);
+  pointer-events: none;
+}
+/* Wheat paste: wet pixel drips hanging from the top edge. */
+.wl-drips {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 30px;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--drip, rgba(249, 245, 233, 0.2));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='30' shape-rendering='crispEdges'%3E%3Cg%3E%3Crect width='232' height='4'/%3E%3Crect x='14' y='4' width='6' height='10'/%3E%3Crect x='12' y='12' width='10' height='6'/%3E%3Crect x='46' y='4' width='4' height='6'/%3E%3Crect x='88' y='4' width='6' height='20'/%3E%3Crect x='86' y='20' width='10' height='6'/%3E%3Crect x='88' y='26' width='6' height='2'/%3E%3Crect x='124' y='4' width='4' height='8'/%3E%3Crect x='158' y='4' width='8' height='12'/%3E%3Crect x='160' y='16' width='4' height='4'/%3E%3Crect x='204' y='4' width='4' height='14'/%3E%3Crect x='202' y='16' width='8' height='4'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 232px 30px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='30' shape-rendering='crispEdges'%3E%3Cg%3E%3Crect width='232' height='4'/%3E%3Crect x='14' y='4' width='6' height='10'/%3E%3Crect x='12' y='12' width='10' height='6'/%3E%3Crect x='46' y='4' width='4' height='6'/%3E%3Crect x='88' y='4' width='6' height='20'/%3E%3Crect x='86' y='20' width='10' height='6'/%3E%3Crect x='88' y='26' width='6' height='2'/%3E%3Crect x='124' y='4' width='4' height='8'/%3E%3Crect x='158' y='4' width='8' height='12'/%3E%3Crect x='160' y='16' width='4' height='4'/%3E%3Crect x='204' y='4' width='4' height='14'/%3E%3Crect x='202' y='16' width='8' height='4'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 232px 30px repeat-x;
+  transform-origin: 50% 0;
+}
+.wl-light {
+  --drip: rgba(104, 27, 43, 0.13);
+}
+
+/* ---- Nav: a strip of coconut tape across the top of the wall ------------ */
+.wl-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: var(--wl-nav);
+  background: var(--coconut);
+  color: var(--merlot);
+}
+.wl-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 4px;
+  background: var(--coconut);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='4' shape-rendering='crispEdges'%3E%3Crect width='8' height='4'/%3E%3C/svg%3E") 0 0 / 16px 4px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='4' shape-rendering='crispEdges'%3E%3Crect width='8' height='4'/%3E%3C/svg%3E") 0 0 / 16px 4px repeat-x;
+}
+
+/* ---- Stickers (drag) ---------------------------------------------------- */
+.wl-sticker {
+  position: absolute;
+  transform: rotate(var(--rot, 0deg));
+}
+.wl-sticker[data-live] {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.wl-sticker > .wl-lift {
+  transition: transform 0.18s steps(3), filter 0.18s steps(3);
+  filter: drop-shadow(3px 4px 0 rgba(36, 27, 31, 0.22));
+}
+.wl-sticker.is-grabbed {
+  cursor: grabbing;
+}
+.wl-sticker.is-grabbed > .wl-lift {
+  transform: scale(1.06);
+  filter: drop-shadow(10px 14px 0 rgba(36, 27, 31, 0.2));
+}
+.wl-sticker:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 6px;
+}
+.wl-light .wl-sticker:focus-visible {
+  outline-color: var(--merlot);
+}
+/* Die-cut sticker border: coconut rim with a stepped corner. */
+.wl-diecut {
+  --step: 6px;
+  background: var(--coconut);
+  padding: 8px;
+}
+
+/* ---- Torn ticket countdown ---------------------------------------------- */
+.wl-ticket {
+  --step: 4px;
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  max-width: 100%;
+  color: var(--merlot);
+  filter: drop-shadow(4px 5px 0 rgba(36, 27, 31, 0.28));
+}
+.wl-ticket-main,
+.wl-ticket-stub {
+  background: var(--coconut);
+}
+.wl-ticket-perf {
+  position: relative;
+  width: 14px;
+  background: var(--coconut);
+}
+.wl-ticket-perf::after {
+  content: "";
+  position: absolute;
+  inset: 8px 4px;
+  background: var(--merlot);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='12' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 6px 12px repeat-y;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='12' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 6px 12px repeat-y;
+}
+.wl-tile {
+  --step: 3px;
+  padding: 6px 6px 5px;
+}
+.wl-digits {
+  font-size: 21px;
+}
+@media (min-width: 640px) {
+  .wl-digits {
+    font-size: 35px;
+  }
+  .wl-tile {
+    padding: 10px 10px 9px;
+  }
+}
+@media (min-width: 1280px) {
+  .wl-digits {
+    font-size: 42px;
+  }
+}
+
+/* ---- Pixel tape ---------------------------------------------------------- */
+.wl-tape {
+  position: absolute;
+  height: 22px;
+  width: 92px;
+  background: rgba(254, 229, 113, 0.88);
+  clip-path: polygon(0 0, 100% 0, 100% 25%, 96% 25%, 96% 50%, 100% 50%, 100% 75%, 96% 75%, 96% 100%, 0 100%, 0 75%, 4% 75%, 4% 50%, 0 50%, 0 25%, 4% 25%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ---- Quest cards with a corner peel ------------------------------------- */
+.wl-qcard {
+  position: relative;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.45s var(--ease-expo);
+  perspective: 900px;
+}
+.wl-qcard-in {
+  position: relative;
+  transform-origin: 0 0;
+  transition: transform 0.45s var(--ease-expo), filter 0.45s var(--ease-expo);
+  filter: drop-shadow(3px 4px 0 rgba(36, 27, 31, 0.18));
+}
+.wl-peel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--peel, 0px);
+  height: var(--peel, 0px);
+  z-index: 4;
+  pointer-events: none;
+  transition: width 0.24s steps(4), height 0.24s steps(4);
+}
+.wl-peel > i {
+  position: absolute;
+  inset: 0;
+}
+/* The patch of wall uncovered under the lifted corner. */
+.wl-peel > i:first-child {
+  background: var(--under, var(--blue));
+  clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 75%, 25% 75%, 25% 50%, 50% 50%, 50% 25%, 75% 25%, 75% 0);
+}
+/* The folded flap: frame colour with a paper-back inset. */
+.wl-peel > i:last-child {
+  background: var(--flap-edge, var(--merlot));
+  clip-path: polygon(0 0, 100% 0, 100% 25%, 75% 25%, 75% 50%, 50% 50%, 50% 75%, 25% 75%, 25% 100%, 0 100%);
+}
+.wl-peel > i:last-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--flap, var(--coconut));
+  clip-path: polygon(0 0, calc(100% - 6px) 0, calc(100% - 6px) 25%, calc(75% - 6px) 25%, calc(75% - 6px) 50%, calc(50% - 6px) 50%, calc(50% - 6px) 75%, calc(25% - 6px) 75%, calc(25% - 6px) calc(100% - 6px), 0 calc(100% - 6px));
+}
+@media (hover: hover) {
+  .wl-qcard:hover,
+  .wl-qcard:focus-within {
+    z-index: 5;
+    transform: rotate(calc(var(--rot, 0deg) * 0.3)) translateY(-8px);
+  }
+  .wl-qcard:hover .wl-qcard-in,
+  .wl-qcard:focus-within .wl-qcard-in {
+    transform: rotateX(5deg) rotateY(-6deg);
+    filter: drop-shadow(10px 14px 0 rgba(36, 27, 31, 0.16));
+  }
+  .wl-qcard:hover,
+  .wl-qcard:focus-within {
+    --peel: 44px;
+  }
+}
+
+/* ---- Nameplate peel (creators) ------------------------------------------ */
+.wl-plate {
+  perspective: 1000px;
+}
+.wl-plate-in {
+  position: relative;
+  transform-origin: 0% 0%;
+  transition: transform 0.4s var(--ease-expo), filter 0.4s var(--ease-expo);
+}
+.wl-plate-in .wl-peel {
+  --under: var(--coconut);
+}
+@media (hover: hover) {
+  .wl-plate:hover .wl-plate-in,
+  .wl-plate:focus-visible .wl-plate-in {
+    transform: rotateX(7deg) rotateY(-9deg) translateZ(10px);
+  }
+  .wl-plate:hover,
+  .wl-plate:focus-visible {
+    --peel: 56px;
+  }
+  .wl-plate:hover > .wl-lift,
+  .wl-plate:focus-visible > .wl-lift {
+    filter: drop-shadow(12px 16px 0 rgba(36, 27, 31, 0.18));
+  }
+}
+
+/* ---- How: the staircase ------------------------------------------------- */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .wl-how-paper {
+    height: 320svh;
+  }
+  .wl-how-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+}
+@media (min-width: 1024px) {
+  .wl-how-stage {
+    min-height: 720px;
+  }
+}
+.wl-stair {
+  --step: 6px;
+}
+.wl-stair::before {
+  /* Stepped top-left corner on each block, the poster's stair motif. */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--paper, var(--coconut));
+  clip-path: polygon(0 0, 100% 0, 100% 6px, 6px 6px, 6px 100%, 0 100%);
+}
+.wl-stair:first-child::before {
+  display: none;
+}
+.wl-slap {
+  transform-origin: 50% 40%;
+}
+
+/* ---- Who ---------------------------------------------------------------- */
+.wl-label {
+  --step: 4px;
+  display: inline-block;
+  padding: 14px 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  transform: rotate(var(--rot, 0deg));
+  filter: drop-shadow(3px 4px 0 rgba(36, 27, 31, 0.2));
+}
+
+/* ---- Partners ticket ---------------------------------------------------- */
+.wl-pticket {
+  --step: 6px;
+  filter: drop-shadow(6px 8px 0 rgba(36, 27, 31, 0.22));
+}
+.wl-pperf {
+  position: relative;
+  background: var(--merlot);
+}
+.wl-pperf::after {
+  content: "";
+  position: absolute;
+  background: var(--blue);
+  inset: 6px 14px;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='6' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 14px 6px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='6' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 14px 6px repeat-x;
+}
+@media (min-width: 768px) {
+  .wl-pperf::after {
+    inset: 14px 6px;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='14' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 6px 14px repeat-y;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='14' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 6px 14px repeat-y;
+  }
+}
+.wl-pstub-in {
+  transform-origin: 0 50%;
+  transition: transform 0.45s var(--ease-expo);
+}
+@media (hover: hover) {
+  .wl-pstub:hover .wl-pstub-in {
+    transform: rotate(3deg);
+  }
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+.wl-peek {
+  position: absolute;
+  right: 9%;
+  bottom: calc(100% - 12px);
+  width: 110px;
+  z-index: 0;
+  overflow: hidden;
+  aspect-ratio: 41 / 35;
+}
+@media (min-width: 1024px) {
+  .wl-peek {
+    width: 164px;
+  }
+}
+
+/* Reduced motion: static stickers, cards visible, everything in its final place. */
+@media (prefers-reduced-motion: reduce) {
+  .wl-peel,
+  .wl-qcard,
+  .wl-qcard-in,
+  .wl-plate-in,
+  .wl-pstub-in {
+    transition: none;
+  }
+}
+
+/* The climbing fox: hidden until its timeline places it; parked on the top step otherwise. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .wl-hfox {
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wl-hfox {
+    left: calc(87.5% - 44px);
+    top: auto;
+    bottom: calc(86% - 3px);
+  }
+}
+
+/* Creators: plates stack in flow on small screens, collage on desktop. */
+.wl-plates > .wl-sticker {
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .wl-plates > .wl-sticker {
+    position: absolute;
+  }
+}
+
+/* Posters are at least a screen tall so nothing underneath peeks out below them. */
+.wl-fill {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wl-fill > * {
+  width: 100%;
+}
+.wl-fill > .wl-drips,
+.wl-fill > .wl-frame {
+  width: auto;
+}
+.wl-frame {
+  position: absolute;
+  inset: 10px;
+  border: 4px solid var(--merlot);
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  .wl-frame {
+    inset: 18px;
+  }
+}
+
+/* Without the sticky stage the stairs need a definite height for their step percentages. */
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .wl-how-stairs {
+    flex: none;
+    height: 560px;
+  }
+  .wl-how-stage {
+    padding-bottom: 0;
+  }
+}

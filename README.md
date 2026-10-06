@@ -11,6 +11,11 @@ Stack: Next.js (App Router, static export), TypeScript, Tailwind CSS v4, GSAP 3 
 | Main, the full pixel scroll story | http://localhost:3000/ | https://abdelrahmantarekm.github.io/questita_landing/ |
 | Minimal, coconut throughout with small playful moments | http://localhost:3000/minimal/ | https://abdelrahmantarekm.github.io/questita_landing/minimal/ |
 | The Quest, a tiny retro RPG across a pixel map of Cairo | http://localhost:3000/quest/ | https://abdelrahmantarekm.github.io/questita_landing/quest/ |
+| The Poster Wall, sections wheat-pasted like Cairo street posters, draggable sticker collage | http://localhost:3000/wall/ | https://abdelrahmantarekm.github.io/questita_landing/wall/ |
+| Team, refined: the team's agreed layout rebuilt in the pixel brand | http://localhost:3000/team/ | https://abdelrahmantarekm.github.io/questita_landing/team/ |
+| Cinematic, a scrolling film with a camera push, pixel iris and crew credits | http://localhost:3000/film/ | https://abdelrahmantarekm.github.io/questita_landing/film/ |
+
+The last three follow the team version's sections (What, How, Who, Partners, About the creators) and use the creators' pixel nameplates from `public/nameplates/`.
 
 Both share PixelFox, PixelDigit and `useCountdown`, the join logic (`useJoin`), the contact modal, Lenis and the `.ics` helper. The minimal and quest pages never load the preloader, reveal canvas, seams, pins or marquee. The quest map is generated procedurally from a fixed seed (`src/components/quest/mapgen.ts`), drawn once offscreen, and panned by a camera as the fox walks; under reduced motion it becomes a static strip plus plain panels.
 

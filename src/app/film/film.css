@@ -1,0 +1,767 @@
+/* ------------------------------------------------------------------------
+   Option 6: Cinematic (/film/). Imported by the film page only.
+   Default rules are the static layout (reduced motion and the base for
+   mobile). Pinned "stage" layouts live under the motion media queries.
+   ------------------------------------------------------------------------ */
+.film {
+  --gx: 16px;
+  --bar-h: 64px;
+}
+@media (min-width: 640px) {
+  .film {
+    --gx: 32px;
+    --bar-h: 72px;
+  }
+}
+@media (min-width: 1024px) {
+  .film {
+    --gx: 48px;
+  }
+}
+
+.film-chapter {
+  position: relative;
+  /* x only: the wipes reach up out of each chapter */
+  overflow-x: clip;
+}
+
+/* ---- Top bar ------------------------------------------------------------ */
+.film-bar {
+  color: var(--coconut);
+  transition: color 0.2s steps(2);
+}
+.film[data-top="light"] .film-bar {
+  color: var(--merlot);
+}
+.film-mark-dark,
+.film-mark-light {
+  transition: opacity 0.2s steps(2);
+}
+.film-mark-dark {
+  opacity: 0;
+}
+.film[data-top="light"] .film-mark-dark {
+  opacity: 1;
+}
+.film[data-top="light"] .film-mark-light {
+  opacity: 0;
+}
+.film-bar .film-cta {
+  --btn-bg: var(--yellow);
+  --btn-fg: var(--merlot);
+}
+.film[data-top="light"] .film-bar .film-cta {
+  --btn-bg: var(--merlot);
+  --btn-fg: var(--coconut);
+}
+.film-bar :focus-visible {
+  outline-color: var(--yellow);
+}
+.film[data-top="light"] .film-bar :focus-visible {
+  outline-color: var(--merlot);
+}
+.film-slate {
+  letter-spacing: 0.24em;
+}
+
+/* A blinking "recording" square. */
+.film-rec {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  background: var(--yellow);
+  animation: blink 1s steps(1) infinite;
+}
+.film[data-top="light"] .film-bar .film-rec {
+  background: var(--merlot);
+}
+
+/* ---- Timecode ------------------------------------------------------------ */
+.timecode-btn {
+  --step: 4px;
+  background: var(--merlot);
+  color: var(--coconut);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.timecode-btn:active {
+  transform: translateY(1px);
+}
+.timecode-btn .film-rec {
+  background: var(--yellow);
+}
+.film[data-bottom="dark"] .timecode-btn {
+  background: var(--yellow);
+  color: var(--merlot);
+}
+.film[data-bottom="dark"] .timecode-btn .film-rec {
+  background: var(--merlot);
+}
+.film[data-bottom="dark"] .timecode-btn:focus-visible {
+  outline-color: var(--yellow);
+}
+.tc-row {
+  --dp: 2px;
+  font-size: calc(var(--dp) * 7);
+}
+.tc-pair {
+  gap: var(--dp);
+}
+.tc-colon {
+  padding: 0 calc(var(--dp) * 1);
+}
+@media (min-width: 640px) {
+  .tc-row {
+    --dp: 3px;
+  }
+}
+
+/* ---- Big countdown ------------------------------------------------------- */
+.fc-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.fc-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.fc-label {
+  font-size: var(--pxu);
+  letter-spacing: 0.24em;
+  line-height: 1.4;
+  margin-bottom: calc(var(--dp) * 0.9);
+  color: var(--coconut-78);
+}
+.fc-digits {
+  display: flex;
+  gap: var(--dp);
+  font-size: calc(var(--dp) * 7);
+}
+.fc-colon {
+  font-size: calc(var(--dp) * 7);
+  padding: 0 calc(var(--dp) * 0.9);
+}
+.fc-open {
+  font-size: calc(var(--pxu) * 4);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+@media (max-width: 639px) {
+  .fc-row {
+    flex-wrap: wrap;
+    row-gap: calc(var(--dp) * 1.2);
+  }
+  .fc-colon-mid {
+    flex-basis: 100%;
+    height: 0;
+    padding: 0;
+    font-size: 0;
+  }
+  .fc-colon-mid svg {
+    display: none;
+  }
+}
+
+/* Digit pixel size, snapped to whole px where round() exists. */
+.hero-frame,
+.launch-frame {
+  --dp: min(calc((100vw - 40px) / 26), 1.45svh);
+}
+@media (min-width: 640px) {
+  .hero-frame,
+  .launch-frame {
+    --dp: min(calc((100vw - 96px) / 55), 3.1svh);
+  }
+}
+@supports (width: round(down, 10.5px, 1px)) {
+  .hero-frame,
+  .launch-frame {
+    --dp: round(down, min(calc((100vw - 40px) / 26), 1.45svh), 1px);
+  }
+  @media (min-width: 640px) {
+    .hero-frame,
+    .launch-frame {
+      --dp: round(down, min(calc((100vw - 96px) / 55), 3.1svh), 1px);
+    }
+  }
+}
+
+/* ---- Chapter 1: hero ----------------------------------------------------- */
+.hero-stage {
+  height: 100svh;
+  min-height: 560px;
+}
+.hero-frame {
+  padding-top: calc(var(--bar-h) + 3.5svh);
+  padding-bottom: 24px;
+}
+.hero-counter {
+  /* the camera push scales from just below the digits' centre */
+  backface-visibility: hidden;
+}
+.hero-fox {
+  /* sits just under the digit baseline: never over glyph pixels */
+  width: calc(var(--dp) * 10);
+  margin-top: calc(var(--dp) * 0.6);
+}
+.hero-copy {
+  margin-top: 1.6svh;
+}
+.hero-h1 {
+  font-size: clamp(2.35rem, 4.3vw, 5.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.hero-foot {
+  margin-top: 20px;
+  text-align: center;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .hero-foot {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    bottom: 26px;
+    width: auto;
+    margin: 0;
+    text-align: left;
+  }
+}
+@media (min-width: 1024px) and (max-height: 760px) {
+  .hero-foot > p:first-child {
+    display: none;
+  }
+}
+@media (max-width: 639px) {
+  .hero-fox {
+    width: calc(var(--dp) * 9);
+  }
+  .hero-copy .btn {
+    min-height: 44px;
+    padding: 10px 15px;
+    gap: 8px;
+    font-size: 0.9375rem;
+  }
+  .hero-foot {
+    margin-top: 16px;
+  }
+  .hero-foot > p:first-child {
+    font-size: 0.8125rem;
+  }
+  /* repeated in the closing frame */
+  .hero-foot > p:last-child {
+    display: none;
+  }
+}
+
+/* ---- Chapter 2: what ----------------------------------------------------- */
+.what-stage {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--gx) 12svh;
+}
+.what-head {
+  padding-top: calc(var(--bar-h) + 10svh);
+  padding-bottom: 6svh;
+}
+.what-statement {
+  font-size: clamp(2.6rem, 11vw, 8.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  max-width: 11.5em;
+  text-wrap: balance;
+  transform-origin: 0 0;
+}
+.what-sub {
+  margin-top: 1.75rem;
+  max-width: 28rem;
+  font-size: 1.1875rem;
+  line-height: 1.45;
+}
+.what-cards {
+  display: grid;
+  gap: 20px;
+  perspective: 1200px;
+}
+.fq-scene {
+  aspect-ratio: 16 / 6;
+}
+@media (min-width: 1024px) {
+  .what-statement {
+    font-size: 7.6vw;
+  }
+  .what-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .what-stage {
+    position: relative;
+    height: 100svh;
+    max-width: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .what-head {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    top: calc(var(--bar-h) + 2svh);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 0;
+  }
+  .what-statement {
+    flex: none;
+    width: 11.5em;
+  }
+  .what-sub {
+    position: absolute;
+    right: 0;
+    top: 0.4rem;
+    margin: 0;
+    max-width: 24rem;
+    clip-path: inset(0 0 100% 0);
+  }
+  .what-cards {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    bottom: 4svh;
+    max-width: 1440px;
+    margin: 0 auto;
+    perspective: 1500px;
+    perspective-origin: 50% 10%;
+  }
+  .what-card {
+    opacity: 0;
+  }
+}
+@media (min-width: 1024px) and (max-height: 820px) and (prefers-reduced-motion: no-preference) {
+  .fq-scene {
+    aspect-ratio: 16 / 4.2;
+  }
+}
+@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+  .what-head {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--bar-h);
+    padding-bottom: 0;
+  }
+}
+
+/* ---- Chapter 3: how ------------------------------------------------------ */
+.how-stage {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: calc(var(--bar-h) + 8svh) var(--gx) 12svh;
+}
+.how-h2 {
+  font-size: clamp(3.4rem, 13vw, 13rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+.how-intro {
+  margin-top: 1.25rem;
+  max-width: 30rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+.how-beats {
+  margin-top: 3.5rem;
+  display: grid;
+  gap: 3rem;
+}
+.how-beat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 24px 40px;
+}
+.how-num {
+  --dp: 9px;
+  display: flex;
+  gap: var(--dp);
+  font-size: calc(var(--dp) * 7);
+  color: var(--merlot);
+}
+.how-h3 {
+  font-size: clamp(2.1rem, 5.4vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.how-body {
+  max-width: 30rem;
+  font-size: clamp(1.125rem, 1.5vw, 1.45rem);
+  line-height: 1.4;
+  color: var(--body);
+}
+.how-fox {
+  width: 140px;
+  margin-top: 3rem;
+}
+.how-bar {
+  display: none;
+}
+@media (max-width: 639px) {
+  .how-beat {
+    grid-template-columns: 1fr;
+  }
+  .how-num {
+    --dp: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .how-stage {
+    position: relative;
+    height: 100svh;
+    max-width: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .how-title {
+    position: absolute;
+    left: var(--gx);
+    top: calc(var(--bar-h) + 1.5svh);
+    transform-origin: 0 0;
+    z-index: 2;
+  }
+  .how-beats {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: block;
+  }
+  .how-beat {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .how-num {
+    position: absolute;
+    left: var(--gx);
+    top: calc(var(--bar-h) + 12svh);
+    --dp: min(calc((100vw - 32px) / 11), 4svh);
+  }
+  .how-text {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    top: calc(var(--bar-h) + 12svh + min(calc((100vw - 32px) / 11), 4svh) * 7 + 5svh);
+  }
+  .how-fox {
+    position: absolute;
+    right: var(--gx);
+    bottom: calc(3svh + 92px);
+    width: 104px;
+    margin: 0;
+  }
+  .how-bar {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    bottom: calc(3svh + 64px);
+    display: flex;
+    gap: 8px;
+  }
+  .how-seg {
+    flex: 1;
+    height: 12px;
+    background: rgba(104, 27, 43, 0.16);
+  }
+  .how-seg-fill {
+    display: block;
+    height: 100%;
+    background: var(--merlot);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .how-num {
+    top: 52%;
+    translate: 0 -50%;
+    --dp: min(calc((50vw - 100px) / 11), 7.6svh);
+  }
+  .how-text {
+    left: 53%;
+    top: 52%;
+    translate: 0 -50%;
+  }
+  .how-fox {
+    bottom: calc(4svh + 40px);
+    width: clamp(120px, 11vw, 176px);
+  }
+  .how-bar {
+    bottom: 4svh;
+    right: 360px;
+  }
+}
+@supports (width: round(down, 10.5px, 1px)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .how-num {
+      --dp: round(down, min(calc((100vw - 32px) / 11), 4svh), 1px);
+    }
+  }
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .how-num {
+      --dp: round(down, min(calc((50vw - 100px) / 11), 7.6svh), 1px);
+    }
+  }
+}
+
+/* ---- Chapter 4: who ------------------------------------------------------ */
+.who-h2 {
+  font-size: clamp(3.4rem, 13vw, 13rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+}
+.who-bands {
+  margin-top: 6svh;
+  display: flex;
+  flex-direction: column;
+}
+.who-band {
+  overflow: hidden;
+}
+.who-band-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+}
+.who-band-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.08em 0.225em 0.12em;
+  font-size: clamp(3rem, 10vw, 10rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+.who-band-sq {
+  display: inline-block;
+  width: 0.24em;
+  height: 0.24em;
+  background: currentColor;
+}
+.who-band.bg-merlot .who-band-sq {
+  background: var(--yellow);
+}
+.who-nots {
+  font-size: clamp(2.2rem, 5.6vw, 5.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+.who-nots .strike::after {
+  height: max(4px, 0.07em);
+}
+.who-last {
+  font-size: calc(var(--pxu) * 2);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  color: var(--merlot);
+}
+@media (min-width: 768px) {
+  .who-last {
+    font-size: calc(var(--pxu) * 3);
+  }
+}
+
+/* ---- Chapter 5: crew ----------------------------------------------------- */
+.crew-stage {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: calc(var(--bar-h) + 8svh) var(--gx) 14svh;
+}
+.crew-h2 {
+  margin-top: 0.75rem;
+  font-size: clamp(3.4rem, 12vw, 12rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+.crew-reel {
+  display: none;
+}
+.crew-lineup {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 12px;
+}
+.crew-card:last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 6px);
+}
+.crew-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+}
+.crew-card-role {
+  margin-top: 10px;
+  color: var(--yellow);
+  letter-spacing: 0.24em;
+}
+@media (min-width: 1024px) {
+  .crew-lineup {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+  }
+  .crew-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .crew-card.is-founder {
+    flex-grow: 1.25;
+  }
+  .crew-card:last-child {
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .crew-stage {
+    position: relative;
+    height: 100svh;
+    max-width: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .crew-title {
+    position: absolute;
+    left: var(--gx);
+    top: calc(var(--bar-h) + 1.5svh);
+    transform-origin: 0 0;
+    z-index: 2;
+  }
+  .crew-reel {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .crew-moment {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    visibility: hidden;
+  }
+  .crew-strip {
+    display: block;
+    width: calc(var(--u, 8px) * var(--units));
+    height: calc(var(--u, 8px) * var(--rows));
+    max-width: none;
+    will-change: transform;
+  }
+  .crew-idx {
+    margin: 0 var(--gx) 24px;
+    color: var(--coconut-78);
+    letter-spacing: 0.3em;
+    clip-path: inset(0 100% 0 0);
+  }
+  .crew-role {
+    margin: 28px var(--gx) 0;
+    font-size: calc(var(--pxu) * 2);
+    letter-spacing: 0.1em;
+    color: var(--yellow);
+    clip-path: inset(0 100% 0 0);
+  }
+  .crew-lineup {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    top: 53%;
+    translate: 0 -50%;
+    margin: 0 auto;
+    max-width: 1500px;
+  }
+  .crew-card {
+    visibility: hidden;
+  }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .crew-role {
+    font-size: calc(var(--pxu) * 3);
+  }
+}
+
+/* ---- Chapter 6: partners, close, footer --------------------------------- */
+.film-ticket .perf-holes {
+  background: var(--coconut);
+}
+.launch-frame {
+  min-height: 100svh;
+  justify-content: center;
+  padding-top: calc(var(--bar-h) + 3svh);
+  padding-bottom: 6svh;
+}
+.launch-fox {
+  width: calc(var(--dp) * 6.5);
+  margin-top: calc(var(--dp) * 0.6);
+}
+.launch-h2 {
+  margin-top: 0.75rem;
+  max-width: 24ch;
+  font-size: clamp(2rem, 3.6vw, 4.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.film-dots {
+  height: 4px;
+  background: var(--coconut);
+  opacity: 0.35;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E")
+    0 0 / 12px 4px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E")
+    0 0 / 12px 4px repeat-x;
+}
+
+/* ---- Chapter wipes -------------------------------------------------------- */
+.film-wipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 100svh;
+  z-index: 40;
+  pointer-events: none;
+  clip-path: polygon(0 100%, 0 100%, 0 100%);
+}
+.film-wipe-flip {
+  transform: scaleX(-1);
+}
+
+/* ---- Reduced motion: static stacked chapters ----------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .film-wipe {
+    display: none;
+  }
+  .film-rec {
+    animation: none;
+  }
+  .hero-stage {
+    height: auto;
+    min-height: 100svh;
+  }
+}

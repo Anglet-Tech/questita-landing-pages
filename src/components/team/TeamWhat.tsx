@@ -44,9 +44,6 @@ export default function TeamWhat() {
           <p data-rise className="text-[1.0625rem] leading-relaxed text-body">
             Post a quest or join one: a coffee run, a sunset ride, a first-time class. Then show up, with people who are already going.
           </p>
-          <p data-rise className="text-[1.1875rem] font-extrabold text-merlot">
-            Real life, with a playful system on top.
-          </p>
         </div>
 
         <div ref={board} className="tm-board px-bg px-[18px] pb-6 pt-14 lg:p-0">

@@ -129,7 +129,7 @@ export function TeamCreators() {
 /** Footer: merlot, the coconut wordmark, the team's links and legal line. */
 export function TeamFooter() {
   return (
-    <footer className="tm-footer on-dark relative z-[7] bg-merlot pb-6 pt-10 text-coconut lg:pt-12">
+    <footer className="tm-footer on-dark relative z-[8] bg-merlot pb-6 pt-10 text-coconut lg:pt-12">
       <div className="tm-wrap">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex flex-col gap-3">

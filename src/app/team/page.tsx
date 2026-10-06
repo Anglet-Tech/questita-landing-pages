@@ -7,6 +7,7 @@ import TeamHero from "@/components/team/TeamHero";
 import TeamWhat from "@/components/team/TeamWhat";
 import TeamHow from "@/components/team/TeamHow";
 import TeamWho from "@/components/team/TeamWho";
+import TeamSafety from "@/components/team/TeamSafety";
 import TeamStack from "@/components/team/TeamStack";
 import { TeamCreators, TeamFooter, TeamPartners } from "@/components/team/TeamRest";
 
@@ -34,6 +35,8 @@ export default function TeamPage() {
           <TeamHow />
           <div id="who" className="tm-anchor" aria-hidden="true" />
           <TeamWho />
+          <div id="safety" className="tm-anchor" aria-hidden="true" />
+          <TeamSafety />
           <div id="contact" className="tm-anchor" aria-hidden="true" />
           <TeamPartners />
           <div id="creators" className="tm-anchor" aria-hidden="true" />

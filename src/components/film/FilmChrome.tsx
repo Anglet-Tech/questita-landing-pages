@@ -74,6 +74,8 @@ export function Timecode() {
         start: "top 65%",
         endTrigger: launch,
         end: "top 65%",
+        // Spans every later pin: measure after all of them.
+        refreshPriority: -1,
         onToggle: (self) => show(self.isActive),
       });
       return () => st.kill();
@@ -93,7 +95,7 @@ export function Timecode() {
       >
         <span className="flex items-center gap-2" aria-hidden="true">
           <span className="film-rec" />
-          <span className="font-px t-px1 tracking-[0.18em]">Board opens</span>
+          <span className="tc-label font-px t-px1 tracking-[0.18em]">Board opens</span>
         </span>
         <span className="tc-row flex items-center" aria-hidden="true">
           {pairs.map((v, i) => (

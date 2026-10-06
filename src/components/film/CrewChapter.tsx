@@ -145,15 +145,15 @@ export default function CrewChapter() {
           metas.forEach((ms) => ms.forEach((el) => el.removeAttribute("style")));
         };
       });
-      watchChapter(section.current!, 4, "dark");
+      watchChapter(section.current!, 5, "dark");
       return () => mm.revert();
     },
     { scope: section },
   );
 
   return (
-    <section id="crew" ref={section} aria-labelledby="crew-title" className="film-chapter on-dark relative z-[5] bg-merlot text-coconut">
-      <Wipe color="merlot" />
+    <section id="crew" ref={section} aria-labelledby="crew-title" className="film-chapter on-dark relative z-[6] bg-merlot text-coconut">
+      <Wipe color="merlot" flip />
       <div ref={stage} className="crew-stage">
         <div ref={title} className="crew-title">
           <p className="font-px t-px1 tracking-[0.3em] text-yellow">About the creators</p>

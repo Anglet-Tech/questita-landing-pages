@@ -101,6 +101,12 @@
 .film[data-bottom="dark"] .timecode-btn:focus-visible {
   outline-color: var(--yellow);
 }
+/* Narrow phones: the digits alone, so the chip never leaves the screen. */
+@media (max-width: 359px) {
+  .tc-label {
+    display: none;
+  }
+}
 .tc-row {
   --dp: 2px;
   font-size: calc(var(--dp) * 7);
@@ -435,6 +441,8 @@
   .how-title {
     position: absolute;
     left: var(--gx);
+    /* centred title card keeps the page gutter on both sides */
+    max-width: calc(100% - 2 * var(--gx));
     top: calc(var(--bar-h) + 1.5svh);
     transform-origin: 0 0;
     z-index: 2;
@@ -507,7 +515,7 @@
   }
   .how-bar {
     bottom: 4svh;
-    right: 360px;
+    right: 390px;
   }
 }
 @supports (width: round(down, 10.5px, 1px)) {
@@ -581,6 +589,187 @@
   }
 }
 
+/* ---- Safety (between Who and Crew) -------------------------------------- */
+.saf-stage {
+  --ps: 300px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: calc(var(--bar-h) + 8svh) var(--gx) 14svh;
+}
+.saf-h2 {
+  max-width: 15ch;
+  font-size: clamp(2.6rem, 6.4vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.saf-beats {
+  margin-top: 3.5rem;
+  display: grid;
+  gap: 3rem;
+}
+.saf-beat {
+  display: grid;
+  gap: 24px 48px;
+  align-items: center;
+}
+.saf-prop {
+  width: var(--ps);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.saf-h3 {
+  font-size: clamp(2.1rem, 4.6vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.saf-body {
+  max-width: 30rem;
+  font-size: clamp(1.125rem, 1.5vw, 1.45rem);
+  line-height: 1.4;
+  color: var(--body);
+}
+.saf-stamp {
+  font-size: calc(var(--pxu) * 2);
+  letter-spacing: 0.1em;
+  transform: rotate(-8deg);
+}
+.saf-prop-label {
+  white-space: nowrap;
+  font-size: calc(var(--pxu) * 2);
+  letter-spacing: 0.12em;
+}
+.saf-xp {
+  font-size: calc(var(--pxu) * 5);
+  letter-spacing: 0.04em;
+}
+.saf-xp-unit {
+  margin-left: 0.3em;
+  font-size: 0.4em;
+  vertical-align: top;
+}
+.saf-bar {
+  display: none;
+}
+@media (min-width: 640px) {
+  .saf-beat {
+    grid-template-columns: auto 1fr;
+  }
+}
+@media (min-width: 1024px) {
+  .saf-stage {
+    --ps: min(36vw, 54svh);
+  }
+  .saf-stamp {
+    font-size: calc(var(--pxu) * 3);
+  }
+  .saf-xp {
+    font-size: calc(var(--pxu) * 6);
+  }
+}
+@media (min-width: 1400px) and (min-height: 820px) {
+  .saf-xp {
+    font-size: calc(var(--pxu) * 7);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .saf-stage {
+    --ps: min(calc(100vw - 2 * var(--gx)), 34svh);
+    position: relative;
+    height: 100svh;
+    max-width: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .saf-title {
+    position: absolute;
+    left: var(--gx);
+    /* centred title card keeps the page gutter on both sides */
+    max-width: calc(100% - 2 * var(--gx));
+    top: calc(var(--bar-h) + 1.5svh);
+    transform-origin: 0 0;
+    z-index: 2;
+  }
+  .saf-beats {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: block;
+  }
+  .saf-beat {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .saf-prop {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--bar-h) + 11svh);
+    translate: -50% 0;
+  }
+  .saf-text {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    top: calc(var(--bar-h) + 11svh + var(--ps) + 3svh);
+  }
+  .saf-text .saf-h3 {
+    font-size: clamp(1.9rem, 8.4vw, 2.6rem);
+  }
+  .saf-text .saf-body {
+    font-size: 1.0625rem;
+  }
+  .saf-bar {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    bottom: calc(3svh + 64px);
+    display: flex;
+    gap: 8px;
+  }
+  .saf-seg {
+    flex: 1;
+    height: 12px;
+    background: rgba(104, 27, 43, 0.16);
+  }
+  .saf-seg-fill {
+    display: block;
+    height: 100%;
+    background: var(--merlot);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .saf-stage {
+    --ps: min(36vw, 56svh);
+  }
+  .saf-prop {
+    left: calc(25vw - var(--ps) / 2 + var(--gx) / 2);
+    top: 55%;
+    translate: 0 -50%;
+  }
+  .saf-text {
+    left: 53%;
+    top: 55%;
+    translate: 0 -50%;
+  }
+  .saf-text .saf-h3 {
+    font-size: clamp(2.4rem, 4.6vw, 5rem);
+  }
+  .saf-text .saf-body {
+    font-size: clamp(1.125rem, 1.5vw, 1.45rem);
+  }
+  .saf-bar {
+    bottom: 4svh;
+    right: 390px;
+  }
+}
+
 /* ---- Chapter 5: crew ----------------------------------------------------- */
 .crew-stage {
   max-width: 1600px;
@@ -648,6 +837,8 @@
   .crew-title {
     position: absolute;
     left: var(--gx);
+    /* centred title card keeps the page gutter on both sides */
+    max-width: calc(100% - 2 * var(--gx));
     top: calc(var(--bar-h) + 1.5svh);
     transform-origin: 0 0;
     z-index: 2;

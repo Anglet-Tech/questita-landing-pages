@@ -10,6 +10,7 @@ import WallHero from "@/components/wall/WallHero";
 import WallWhat from "@/components/wall/WallWhat";
 import WallHow from "@/components/wall/WallHow";
 import WallWho from "@/components/wall/WallWho";
+import WallSafety from "@/components/wall/WallSafety";
 import WallPartners from "@/components/wall/WallPartners";
 import WallCreators from "@/components/wall/WallCreators";
 import WallFooter from "@/components/wall/WallFooter";
@@ -44,6 +45,9 @@ export default function WallPage() {
             </Poster>
             <Poster id="who" paper="var(--yellow)" light labelledBy="wl-who-t">
               <WallWho />
+            </Poster>
+            <Poster id="safety" paper="var(--coconut)" light frame labelledBy="wl-safety-t">
+              <WallSafety />
             </Poster>
             <Poster id="contact" paper="var(--blue)" light fill={false} labelledBy="wl-partners-t">
               <WallPartners />

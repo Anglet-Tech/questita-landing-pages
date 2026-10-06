@@ -103,6 +103,17 @@ export const CREW: Creator[] = [
   { name: "Hadeer Abdallah", stem: "Hadeer-Abdallah", card: "yellow", stripW: 3120 },
 ];
 
+export const SAFETY = {
+  title: "Real life, with a playful system on top.",
+  points: [
+    { title: "Everyone’s verified.", body: "ID and a live photo at sign-up, so the person you meet is the person on the profile." },
+    { title: "Your call on who.", body: "Set a gender preference on any quest you post." },
+    { title: "Meetup point, when you’re ready.", body: "You decide when the exact spot is shared." },
+    { title: "Show up, level up.", body: "Earn points for showing up and being someone people want to quest with again." },
+    { title: "Keep your circle.", body: "The people you’ve quested with stay close for the next plan." },
+  ],
+};
+
 export const PARTNERS = {
   title: "Want to be part of the plan?",
   body: "If you run a place, brand or product that belongs in a Cairo plan, we’d love to talk.",
@@ -120,4 +131,4 @@ export const FOOTER = {
 };
 
 /** Chapter slate shown in the top bar. */
-export const CHAPTERS = ["Countdown", "The board", "Four stops", "Built for Cairo", "The crew", "The plan"] as const;
+export const CHAPTERS = ["Countdown", "The board", "Four stops", "Built for Cairo", "Safety", "The crew", "The plan"] as const;

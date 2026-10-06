@@ -75,8 +75,8 @@ export default function LaunchChapter() {
           cnt.removeAttribute("style");
         };
       });
-      watchChapter(partners.current!, 5, "light");
-      watchChapter(launch.current!, 5, "dark");
+      watchChapter(partners.current!, 6, "light");
+      watchChapter(launch.current!, 6, "dark");
       return () => mm.revert();
     },
     { scope: partners },
@@ -84,7 +84,7 @@ export default function LaunchChapter() {
 
   return (
     <>
-      <section id="partners" ref={partners} aria-labelledby="partners-title" className="film-chapter relative z-[6] bg-coconut text-merlot">
+      <section id="partners" ref={partners} aria-labelledby="partners-title" className="film-chapter relative z-[7] bg-coconut text-merlot">
         <Wipe color="coconut" />
         <div className="mx-auto max-w-[1180px] px-4 py-[12vh] sm:px-8 lg:py-[16vh]">
           <div ref={ticket} className="film-ticket px-corners flex flex-col lg:flex-row" style={{ "--step": "8px" } as React.CSSProperties}>
@@ -113,7 +113,7 @@ export default function LaunchChapter() {
         </div>
       </section>
 
-      <section id="launch" ref={launch} aria-labelledby="launch-title" className="film-chapter on-dark relative z-[7] bg-merlot text-coconut">
+      <section id="launch" ref={launch} aria-labelledby="launch-title" className="film-chapter on-dark relative z-[8] bg-merlot text-coconut">
         <Wipe color="merlot" flip />
         <div className="launch-frame mx-auto flex max-w-[1600px] flex-col items-center px-4 text-center sm:px-8 lg:px-12">
           <div ref={counter} className="launch-counter w-full origin-[50%_60%]">
@@ -153,14 +153,14 @@ export function FilmFooter() {
           scrollTrigger: { trigger: footer.current, start: "top 85%", once: true },
         });
       });
-      watchChapter(footer.current!, 5, "dark");
+      watchChapter(footer.current!, 6, "dark");
       return () => mm.revert();
     },
     { scope: footer },
   );
 
   return (
-    <footer ref={footer} className="film-chapter on-dark relative z-[8] bg-merlot text-coconut">
+    <footer ref={footer} className="film-chapter on-dark relative z-[9] bg-merlot text-coconut">
       <div className="mx-auto max-w-[1600px] px-4 pb-8 pt-10 sm:px-8 lg:px-12">
         <h2 className="sr-only">Questita</h2>
         <div aria-hidden="true" className="giant font-px flex justify-between leading-[0.9] text-coconut">

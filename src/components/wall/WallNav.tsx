@@ -8,6 +8,7 @@ const LINKS = [
   { href: "#what", label: "What is Questita" },
   { href: "#how", label: "How it works" },
   { href: "#who", label: "Who it’s for" },
+  { href: "#safety", label: "Safety" },
   { href: "#creators", label: "About the creators" },
 ];
 
@@ -20,7 +21,7 @@ export default function WallNav() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={asset("/fox/Questita_wordmark_merlot.svg")} alt="" width={1148} height={189} className="h-auto w-full" />
         </a>
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-5 lg:flex xl:gap-7">
           {LINKS.map((l) => (
             <li key={l.href}>
               <a href={l.href} className="roll-host text-[0.9375rem] font-semibold text-merlot">

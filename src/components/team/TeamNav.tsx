@@ -10,6 +10,7 @@ export const TEAM_LINKS = [
   { href: "#what", label: "What is Questita" },
   { href: "#how", label: "How it works" },
   { href: "#who", label: "Who it’s for" },
+  { href: "#safety", label: "Safety" },
   { href: "#creators", label: "About the creators" },
 ] as const;
 

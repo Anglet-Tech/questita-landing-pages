@@ -7,6 +7,7 @@ import HeroChapter from "@/components/film/HeroChapter";
 import WhatChapter from "@/components/film/WhatChapter";
 import HowChapter from "@/components/film/HowChapter";
 import WhoChapter from "@/components/film/WhoChapter";
+import SafetyChapter from "@/components/film/SafetyChapter";
 import CrewChapter from "@/components/film/CrewChapter";
 import LaunchChapter, { FilmFooter } from "@/components/film/LaunchChapter";
 
@@ -30,6 +31,7 @@ export default function FilmPage() {
           <WhatChapter />
           <HowChapter />
           <WhoChapter />
+          <SafetyChapter />
           <CrewChapter />
           <LaunchChapter />
         </main>

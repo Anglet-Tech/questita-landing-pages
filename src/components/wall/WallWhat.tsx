@@ -179,7 +179,6 @@ export default function WallWhat() {
         <div className="flex flex-col gap-3 text-[1.0625rem] font-medium leading-relaxed text-merlot lg:col-span-5">
           <p>Cairo is big, and most good plans die at “we should do something.” Questita makes it easier to find someone to do the thing with.</p>
           <p>Post a quest or join one: a coffee run, a sunset ride, a first-time class. Then show up, with people who are already going.</p>
-          <p className="font-extrabold">Real life, with a playful system on top.</p>
         </div>
       </div>
 

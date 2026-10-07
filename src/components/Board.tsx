@@ -57,7 +57,7 @@ export default function Board() {
 
   return (
     <section id="board" ref={section} data-nav="light" aria-labelledby="board-title" className="relative z-[2] bg-coconut text-merlot">
-      <div ref={pinWrap} className="board-pin relative flex flex-col pb-12 pt-[calc(var(--nav-h)+40px)] lg:h-[100svh] lg:justify-center lg:pb-8 lg:pt-[calc(var(--nav-h)+8px)]">
+      <div ref={pinWrap} className="board-pin relative flex flex-col overflow-x-clip pb-12 pt-[calc(var(--nav-h)+40px)] lg:h-[100svh] lg:justify-center lg:pb-8 lg:pt-[calc(var(--nav-h)+8px)]">
         <div ref={track} className="board-track lg:flex lg:w-max lg:items-center lg:gap-12 lg:pl-12 lg:pr-[10vw]">
           {/* Intro panel: part of the pan on desktop, a normal block on mobile */}
           <div className="board-intro px-4 sm:px-8 lg:w-[min(36rem,40vw)] lg:shrink-0 lg:px-0">
@@ -69,7 +69,7 @@ export default function Board() {
                 <li key={t.term} className="chip-host relative">
                   <button
                     type="button"
-                    className="chip px-corners bg-blue px-4 py-2 text-[1rem] font-bold text-merlot"
+                    className="chip px-corners bg-blue px-4 py-2 pointer-coarse:py-2.5 text-[1rem] font-bold text-merlot"
                     aria-describedby={`term-${t.term}`}
                     style={{ "--step": "4px" } as React.CSSProperties}
                   >
@@ -81,6 +81,9 @@ export default function Board() {
                     tailLeft={i === TERMS.length - 1 ? 196 : 24}
                     className={`chip-bubble absolute bottom-[calc(100%+16px)] z-30 w-[min(16rem,calc(100vw-40px))] ${
                       i === TERMS.length - 1 ? "right-0" : "left-0"
+                    } ${
+                      // Phones: the middle bubble centres on its chip so it never runs past the screen edge.
+                      i > 0 && i < TERMS.length - 1 ? "max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:[&_.bubble-tail]:!left-[calc(50%-9px)]" : ""
                     }`}
                   >
                     <p className="text-[0.9375rem] font-medium leading-snug">

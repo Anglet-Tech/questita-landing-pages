@@ -1,13 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gsap, MQ, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
 import type { FoxFrame } from "@/lib/fox";
 import PixelDigit from "@/components/PixelDigit";
 import PixelFox from "@/components/PixelFox";
 import Wipe from "./Wipe";
 import { HOW, STOPS } from "./content";
-import { span, stepped, watchChapter } from "./filmKit";
+import { FMQ, span, stepped, watchChapter } from "./filmKit";
 
 const inOut = gsap.parseEase("power3.inOut");
 const BEAT0 = 0.14;
@@ -34,7 +34,7 @@ export default function HowChapter() {
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add(MQ.motion, () => {
+      mm.add(FMQ.pin, () => {
         const st = stage.current!;
         const tt = title.current!;
         const it = intro.current!;

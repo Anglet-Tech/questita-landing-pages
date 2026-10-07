@@ -33,6 +33,13 @@ export default function TeamStack() {
   }, []);
 
   useGSAP(() => {
+    // Every stepped top edge folds flat in the last ~45px before it reaches
+    // the nav. Scrubbed from the static anchor, a transform on one small element per section.
+    document.querySelectorAll<HTMLElement>(".tm-anchor").forEach((a) => {
+      const edge = a.nextElementSibling?.querySelector<HTMLElement>(":scope > .tm-edge");
+      if (!edge) return;
+      gsap.fromTo(edge, { scaleY: 1 }, { scaleY: 0, ease: "none", scrollTrigger: { trigger: a, start: "top 52px", end: "top 6px", scrub: true } });
+    });
     const mm = gsap.matchMedia();
     mm.add(DESKTOP_MOTION, () => {
       const anchors = Array.from(document.querySelectorAll<HTMLElement>(".tm-anchor"));

@@ -116,10 +116,10 @@ export function PartnersLine() {
 
 export function MinimalFooter() {
   const [frame, setFrame] = useState<FoxFrame>("happy");
-  const link = "roll-host text-[0.9375rem] font-semibold text-merlot";
+  const link = "roll-host inline-flex min-h-[44px] items-center text-[0.9375rem] font-semibold text-merlot";
   return (
     <footer className="border-t border-merlot/10">
-      <div className="relative mx-auto max-w-[1100px] px-4 pb-10 pt-16 sm:px-8">
+      <div className="relative mx-auto max-w-[1100px] px-4 pb-24 pt-16 sm:px-8">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -127,7 +127,7 @@ export function MinimalFooter() {
             <p className="mt-4 max-w-[22ch] text-[1.0625rem] font-bold leading-snug text-merlot">For the people who make the big city feel smaller.</p>
           </div>
           <nav aria-label="Footer">
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col">
               <li>
                 <a href="#board" className={link}>
                   <Roll>The board</Roll>

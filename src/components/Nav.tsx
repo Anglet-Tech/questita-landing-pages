@@ -177,7 +177,7 @@ export default function Nav() {
         >
           <div className="nav-bar absolute inset-0" aria-hidden="true" />
           <div className="relative mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-4 sm:px-8 lg:px-12">
-            <a href="#top" className="relative block h-[22px] w-[134px] shrink-0" aria-label="Questita, back to top">
+            <a href="#top" className="relative block h-[22px] w-[134px] shrink-0 max-[359px]:h-[18px] max-[359px]:w-[110px] after:absolute after:inset-x-0 after:-inset-y-[11px] after:content-['']" aria-label="Questita, back to top">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={asset("/fox/Questita_wordmark_coconutmilk.svg")}
@@ -214,7 +214,7 @@ export default function Nav() {
             <div className="nav-right relative flex items-center gap-2 sm:gap-3">
               <NavCounter visible={pill} />
               <Magnetic className={`nav-cta${pill ? " has-pill" : ""}`}>
-                <button type="button" onClick={openContact} className="btn btn-yellow btn-sm roll-host">
+                <button type="button" onClick={openContact} className="btn btn-yellow btn-sm roll-host pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-px pointer-coarse:after:content-['']">
                   <Roll>Get in touch</Roll>
                 </button>
               </Magnetic>

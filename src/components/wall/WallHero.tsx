@@ -63,24 +63,26 @@ export default function WallHero() {
 
   return (
     <div ref={stage} className="relative min-h-[100svh]">
-      <div className="mx-auto max-w-[1440px] px-4 pb-6 pt-[calc(var(--wl-nav)+26px)] sm:px-8 lg:px-12 lg:pb-16 lg:pt-[calc(var(--wl-nav)+8vh)]">
+      <div className="wl-hero-in mx-auto max-w-[1440px] px-4 pb-6 pt-[calc(var(--wl-nav)+26px)] sm:px-8 lg:px-12 lg:pb-16 lg:pt-[calc(var(--wl-nav)+8vh)]">
         <div className="lg:max-w-[54%] xl:max-w-[50%]">
-          <h1 id="wl-h1" className="text-[clamp(2.6rem,5.9vw,5.2rem)] font-extrabold leading-[0.98] tracking-[-0.04em] text-coconut">
+          <h1 id="wl-h1" className="wl-h1 text-[clamp(2.6rem,5.9vw,5.2rem)] font-extrabold leading-[0.98] tracking-[-0.04em] text-coconut">
             Find the thing.
             <br />
             <span className="text-yellow">Find your people.</span>
           </h1>
-          <p className="mt-5 max-w-[34rem] text-[1.0625rem] font-medium leading-relaxed text-coconut-78 sm:text-[1.1875rem] lg:mt-7">
+          <p className="wl-hero-sub mt-5 max-w-[34rem] text-[1.0625rem] font-medium leading-relaxed text-coconut-78 sm:text-[1.1875rem] lg:mt-7">
             Questita is a social quest app for Cairo. Someone posts a plan, you join in, and the big city feels a little smaller.
           </p>
-          <div data-intro="" className="mt-7 w-max max-w-full origin-left -rotate-[1.5deg] lg:mt-9">
+          <div data-intro="" className="wl-hero-ticket mt-7 w-max max-w-full origin-left -rotate-[1.5deg] lg:mt-9">
             <TicketCountdown />
           </div>
           <p className="font-px t-px1 mt-3 tracking-[0.2em] text-coconut-78">Cairo first. Alexandria next.</p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-4 lg:mt-8">
+          <div className="wl-hero-ctas mt-6 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-8">
             <CalendarButton className="btn-yellow" />
-            <a href="#how" className="roll-host border-b-2 border-yellow pb-0.5 text-[1rem] font-bold text-coconut">
-              <Roll>See how it works</Roll>
+            <a href="#how" className="roll-host inline-flex min-h-[44px] items-center text-[1rem] font-bold text-coconut">
+              <span className="border-b-2 border-yellow pb-0.5">
+                <Roll>See how it works</Roll>
+              </span>
             </a>
           </div>
         </div>
@@ -148,8 +150,8 @@ export default function WallHero() {
                   aria-label={join.joined ? "Leave Felucca at golden hour" : "Join Felucca at golden hour"}
                   data-joined={join.joined || undefined}
                   data-fresh={join.fresh || undefined}
-                  className="join font-px t-px1 relative mt-1 h-10 w-full overflow-hidden bg-merlot text-coconut"
-                  style={{ "--row": "40px" } as React.CSSProperties}
+                  className="join font-px t-px1 relative mt-1 h-11 w-full overflow-hidden bg-merlot text-coconut"
+                  style={{ "--row": "44px" } as React.CSSProperties}
                 >
                   <span className="join-stack block" aria-hidden="true">
                     <span>Join</span>

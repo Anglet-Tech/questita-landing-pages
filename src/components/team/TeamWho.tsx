@@ -63,6 +63,7 @@ export default function TeamWho() {
 
   return (
     <section ref={section} data-pin aria-labelledby="tm-who-title" className="tm-sec tm-who tm-full on-dark py-16 text-coconut lg:py-[clamp(36px,8vh,104px)]">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap relative flex flex-col items-center gap-[clamp(14px,2.6vh,28px)] text-center">
         <h2 id="tm-who-title" ref={h2} className="text-[clamp(2.5rem,min(5.2vw,8.4vh),4.25rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
           Built for Cairo.

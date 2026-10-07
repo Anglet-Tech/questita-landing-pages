@@ -238,12 +238,12 @@ export default function How() {
             {STOPS.map((s) => (
               <li key={s.n} className="flex gap-6">
                 <span data-lstop aria-hidden="true" className="mt-1 block h-12 w-12 shrink-0 bg-yellow" />
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   <p className="font-px t-px1 text-yellow">{s.n}</p>
                   <h3 className="mt-2 text-[clamp(2.2rem,8vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">{s.title}</h3>
                   <p className="mt-3 max-w-[30rem] text-[1.125rem] font-medium leading-snug text-coconut-78">{s.body}</p>
                   {s.n === "03" && (
-                    <Bubble className="mt-5 w-max" tailLeft={20}>
+                    <Bubble className="mt-5 w-max max-w-full" tailLeft={20}>
                       <p className="font-px t-px1 tracking-[0.12em]">{SNACKS}</p>
                     </Bubble>
                   )}

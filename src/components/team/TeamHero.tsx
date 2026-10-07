@@ -200,8 +200,10 @@ export default function TeamHero() {
               <Magnetic>
                 <CalendarButton className="btn-yellow" />
               </Magnetic>
-              <a href="#how" className="roll-host border-b-2 border-coconut pb-0.5 font-bold text-coconut">
-                <Roll>See how it works</Roll>
+              <a href="#how" className="roll-host inline-flex min-h-11 items-center font-bold text-coconut">
+                <span className="border-b-2 border-coconut pb-0.5">
+                  <Roll>See how it works</Roll>
+                </span>
               </a>
             </div>
           </div>

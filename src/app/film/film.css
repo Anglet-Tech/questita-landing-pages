@@ -6,6 +6,9 @@
 .film {
   --gx: 16px;
   --bar-h: 64px;
+  /* Bottom band kept clear in pinned frames for the timecode (bottom-right)
+     and the "All options" pill (bottom-left, from layout). */
+  --chrome-b: calc(76px + env(safe-area-inset-bottom));
 }
 @media (min-width: 640px) {
   .film {
@@ -78,8 +81,13 @@
 }
 
 /* ---- Timecode ------------------------------------------------------------ */
+.timecode {
+  margin-bottom: env(safe-area-inset-bottom);
+  margin-right: env(safe-area-inset-right);
+}
 .timecode-btn {
   --step: 4px;
+  min-height: 44px;
   background: var(--merlot);
   color: var(--coconut);
   cursor: pointer;
@@ -102,7 +110,8 @@
   outline-color: var(--yellow);
 }
 /* Narrow phones: the digits alone, so the chip never leaves the screen. */
-@media (max-width: 359px) {
+/* Phones: the digits alone, so the chip stays clear of the "All options" pill bottom-left. */
+@media (max-width: 479px) {
   .tc-label {
     display: none;
   }
@@ -230,12 +239,14 @@
 @media (min-width: 1024px) {
   .hero-foot {
     position: absolute;
-    left: var(--gx);
+    left: auto;
     right: var(--gx);
     bottom: 26px;
     width: auto;
     margin: 0;
-    text-align: left;
+    gap: 40px;
+    flex-direction: row-reverse;
+    text-align: right;
   }
 }
 @media (min-width: 1024px) and (max-height: 760px) {
@@ -306,7 +317,7 @@
   }
 }
 
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .what-stage {
     position: relative;
     height: 100svh;
@@ -341,7 +352,7 @@
     position: absolute;
     left: var(--gx);
     right: var(--gx);
-    bottom: 4svh;
+    bottom: var(--chrome-b);
     max-width: 1440px;
     margin: 0 auto;
     perspective: 1500px;
@@ -351,19 +362,19 @@
     opacity: 0;
   }
 }
-@media (min-width: 1024px) and (max-height: 820px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (max-height: 820px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .fq-scene {
     aspect-ratio: 16 / 4.2;
   }
 }
-@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .what-head {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding-top: var(--bar-h);
-    padding-bottom: 0;
+    padding-bottom: var(--chrome-b);
   }
 }
 
@@ -430,7 +441,7 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .how-stage {
     position: relative;
     height: 100svh;
@@ -473,7 +484,7 @@
   .how-fox {
     position: absolute;
     right: var(--gx);
-    bottom: calc(3svh + 92px);
+    bottom: calc(var(--chrome-b) + 28px);
     width: 104px;
     margin: 0;
   }
@@ -481,7 +492,7 @@
     position: absolute;
     left: var(--gx);
     right: var(--gx);
-    bottom: calc(3svh + 64px);
+    bottom: var(--chrome-b);
     display: flex;
     gap: 8px;
   }
@@ -498,7 +509,7 @@
     transform-origin: 0 50%;
   }
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .how-num {
     top: 52%;
     translate: 0 -50%;
@@ -510,21 +521,17 @@
     translate: 0 -50%;
   }
   .how-fox {
-    bottom: calc(4svh + 40px);
+    bottom: calc(var(--chrome-b) + 32px);
     width: clamp(120px, 11vw, 176px);
-  }
-  .how-bar {
-    bottom: 4svh;
-    right: 390px;
   }
 }
 @supports (width: round(down, 10.5px, 1px)) {
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
     .how-num {
       --dp: round(down, min(calc((100vw - 32px) / 11), 4svh), 1px);
     }
   }
-  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
     .how-num {
       --dp: round(down, min(calc((50vw - 100px) / 11), 7.6svh), 1px);
     }
@@ -676,7 +683,7 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .saf-stage {
     --ps: min(calc(100vw - 2 * var(--gx)), 34svh);
     position: relative;
@@ -727,7 +734,7 @@
     position: absolute;
     left: var(--gx);
     right: var(--gx);
-    bottom: calc(3svh + 64px);
+    bottom: var(--chrome-b);
     display: flex;
     gap: 8px;
   }
@@ -744,7 +751,7 @@
     transform-origin: 0 50%;
   }
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .saf-stage {
     --ps: min(36vw, 56svh);
   }
@@ -764,10 +771,7 @@
   .saf-text .saf-body {
     font-size: clamp(1.125rem, 1.5vw, 1.45rem);
   }
-  .saf-bar {
-    bottom: 4svh;
-    right: 390px;
-  }
+
 }
 
 /* ---- Chapter 5: crew ----------------------------------------------------- */
@@ -826,7 +830,7 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .crew-stage {
     position: relative;
     height: 100svh;
@@ -859,10 +863,29 @@
   }
   .crew-strip {
     display: block;
-    width: calc(var(--u, 8px) * var(--units));
-    height: calc(var(--u, 8px) * var(--rows));
-    max-width: none;
+    width: max-content;
     will-change: transform;
+  }
+  .crew-row {
+    display: block;
+    overflow: hidden;
+    width: calc(var(--u, 8px) * var(--w));
+    height: calc(var(--u, 8px) * var(--rows));
+  }
+  .crew-row img {
+    display: block;
+    width: calc(var(--u, 8px) * var(--units));
+    height: 100%;
+    max-width: none;
+    margin-left: calc(var(--u, 8px) * var(--off) * -1);
+  }
+  .crew-row-b {
+    margin-top: calc(var(--u, 8px) * 2);
+  }
+  .crew-stage:not([data-two]) .crew-row-a,
+  .crew-stage:not([data-two]) .crew-row-b,
+  .crew-stage[data-two] .crew-row-full {
+    display: none;
   }
   .crew-idx {
     margin: 0 var(--gx) 24px;
@@ -890,7 +913,7 @@
     visibility: hidden;
   }
 }
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
   .crew-role {
     font-size: calc(var(--pxu) * 3);
   }
@@ -904,7 +927,7 @@
   min-height: 100svh;
   justify-content: center;
   padding-top: calc(var(--bar-h) + 3svh);
-  padding-bottom: 6svh;
+  padding-bottom: max(6svh, var(--chrome-b));
 }
 .launch-fox {
   width: calc(var(--dp) * 6.5);
@@ -944,6 +967,14 @@
 }
 
 /* ---- Reduced motion: static stacked chapters ----------------------------- */
+/* Short screens (landscape phones): no pins, the hero sizes to its content. */
+@media (max-height: 559px) {
+  .hero-stage {
+    height: auto;
+    min-height: 100svh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .film-wipe {
     display: none;
@@ -954,5 +985,38 @@
   .hero-stage {
     height: auto;
     min-height: 100svh;
+  }
+}
+
+/* ---- Responsive pass (round 5) ------------------------------------------ */
+/* Narrowest phones: the hero copy and CTAs stay on one line each. */
+@media (max-width: 359px) {
+  .hero-h1 {
+    font-size: 1.95rem;
+  }
+  .hero-copy .btn {
+    padding: 9px 12px;
+    font-size: 0.875rem;
+    gap: 6px;
+  }
+}
+/* Short phones in portrait: props and the How fox shrink so beats clear the strip. */
+@media (max-width: 1023px) and (max-height: 760px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+  .saf-stage {
+    --ps: min(calc(100vw - 2 * var(--gx)), 28svh);
+  }
+  .how-fox {
+    display: none;
+  }
+}
+@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+  .how-fox {
+    width: 88px;
+  }
+}
+@media (max-width: 639px) and (max-height: 700px) {
+  /* short phones: the sub copy would reach the bottom chrome; it is the same line as the meta description */
+  .hero-foot > p:first-child {
+    display: none;
   }
 }

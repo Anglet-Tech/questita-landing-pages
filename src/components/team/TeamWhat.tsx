@@ -33,6 +33,7 @@ export default function TeamWhat() {
 
   return (
     <section ref={section} data-pin aria-labelledby="tm-what-title" className="tm-sec tm-what tm-full py-16 lg:py-[clamp(32px,8vh,96px)]">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-[clamp(32px,5vw,68px)]">
         <div className="flex flex-col gap-4">
           <h2 id="tm-what-title" ref={h2} className="text-[clamp(2.125rem,min(4.4vw,6.4vh),3.5rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-merlot">
@@ -49,13 +50,13 @@ export default function TeamWhat() {
         <div ref={board} className="tm-board px-bg px-[18px] pb-6 pt-14 lg:p-0">
           <p className="font-px t-px2 text-merlot lg:absolute lg:left-8 lg:top-7">On the board</p>
           <div
-            className="absolute -top-14 right-4 w-[92px] lg:-top-[52px] lg:right-10 lg:w-[132px]"
+            className="absolute -top-14 right-4 w-[92px] lg:-top-[46px] lg:right-5 lg:w-[104px] xl:-top-[52px] xl:right-8 xl:w-[124px]"
             onPointerEnter={() => setFox("wow")}
             onPointerLeave={() => setFox("wink")}
           >
             <PixelFox frame={fox} label="The fox, winking" />
           </div>
-          <div className="mt-4 flex flex-col gap-4 lg:mt-0">
+          <div className="tm-bcards mt-4 flex flex-col gap-4 lg:mt-0">
             <div data-card className="tm-bcard tm-bcard-a">
               <div className="tm-lift" style={{ "--rot": "-3deg" } as React.CSSProperties}>
                 <TeamQuest tag="Coffee run" title="Flat white and a walk" desc="Two cups, one loop around the neighborhood." area="Garden City" when="Sat, 10:00 AM" day="Sat" spots={2} />

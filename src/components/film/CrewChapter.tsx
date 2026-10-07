@@ -2,16 +2,20 @@
 
 import { useRef } from "react";
 import { asset } from "@/lib/asset";
-import { gsap, MQ, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
 import Wipe from "./Wipe";
 import { CREW } from "./content";
-import { span, stepped, watchChapter } from "./filmKit";
+import { FMQ, span, stepped, watchChapter } from "./filmKit";
 
 const inOut = gsap.parseEase("power3.inOut");
 /** Lettering strips are drawn on a 24px grid, 12 cells tall. */
 const STRIP_UNIT = 24;
 const STRIP_ROWS = 12;
 const MAX_UNITS = Math.max(...CREW.map((c) => c.stripW / STRIP_UNIT));
+/** Widest single word: on narrow screens each name splits into two rows so it fits. */
+const MAX_WORD = Math.max(...CREW.map((c) => Math.max(c.split[0], c.stripW / STRIP_UNIT - c.split[1])));
+const TWO_ROW_BELOW = 1024;
+const blockUnits = (c: (typeof CREW)[number], two: boolean) => (two ? Math.max(c.split[0], c.stripW / STRIP_UNIT - c.split[1]) : c.stripW / STRIP_UNIT);
 
 const M0 = 0.11;
 const M1 = 0.76;
@@ -40,7 +44,7 @@ export default function CrewChapter() {
   useIdleGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add(MQ.motion, () => {
+      mm.add(FMQ.pin, () => {
         const st = stage.current!;
         const tt = title.current!;
         const moments = gsap.utils.toArray<HTMLElement>("[data-moment]", st);
@@ -48,6 +52,7 @@ export default function CrewChapter() {
         const metas = moments.map((m) => m.querySelectorAll<HTMLElement>("[data-meta]"));
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", lineup.current);
         const label = tt.querySelector<HTMLElement>("p")!;
+        const caps = cards.map((c) => c.querySelector<HTMLElement>(".crew-card-role")!);
         let lastLabel = -1;
 
         let W = 1;
@@ -55,6 +60,7 @@ export default function CrewChapter() {
         let y0 = 0;
         let K = 0.3;
         let u = 8;
+        let two = false;
         const card0 = cards.map(() => ({ dx: 0, dy: 0 }));
         const lastMoment = moments.map(() => -1);
         const lastMeta = moments.map(() => -1);
@@ -64,8 +70,11 @@ export default function CrewChapter() {
           W = st.offsetWidth;
           const H = st.offsetHeight;
           const margin = W < 768 ? 16 : 24;
-          u = Math.max(4, Math.min(16, Math.floor((W - margin * 2) / MAX_UNITS)));
+          // Whole screen px per art pixel; the name always fits when it holds centred.
+          two = W < TWO_ROW_BELOW;
+          u = Math.max(2, Math.min(16, Math.floor((W - margin * 2) / (two ? MAX_WORD : MAX_UNITS))));
           st.style.setProperty("--u", `${u}px`);
+          st.toggleAttribute("data-two", two);
           x0 = (W - tt.offsetWidth) / 2 - tt.offsetLeft;
           y0 = (H - tt.offsetHeight) / 2 - tt.offsetTop;
           const h2 = tt.querySelector("h2")!;
@@ -96,7 +105,7 @@ export default function CrewChapter() {
               m.style.visibility = live ? "visible" : "hidden";
             }
             if (live) {
-              const sw = (CREW[i].stripW / STRIP_UNIT) * u;
+              const sw = blockUnits(CREW[i], two) * u;
               const x = W - (W + sw) * crawl(t);
               strips[i].style.transform = `translate3d(${Math.round(x)}px, 0, 0)`;
             }
@@ -116,6 +125,8 @@ export default function CrewChapter() {
             lastCard[i] = e;
             const k = 1 - e;
             c.style.visibility = pc > 0 ? "visible" : "hidden";
+            // Captions only once the card has landed, so cards in flight stay clean.
+            caps[i].style.visibility = e >= 1 ? "" : "hidden";
             c.style.transform = `translate3d(${(card0[i].dx * k).toFixed(1)}px, ${(card0[i].dy * k).toFixed(1)}px, 0) scale(${(1 + 1.6 * k).toFixed(3)})`;
           });
         };
@@ -141,7 +152,7 @@ export default function CrewChapter() {
         });
         return () => {
           trig.kill();
-          [st, tt, label, ...moments, ...strips, ...cards].forEach((el) => el.removeAttribute("style"));
+          [st, tt, label, ...moments, ...strips, ...cards, ...caps].forEach((el) => el.removeAttribute("style"));
           metas.forEach((ms) => ms.forEach((el) => el.removeAttribute("style")));
         };
       });
@@ -168,16 +179,20 @@ export default function CrewChapter() {
               <p data-meta className="crew-idx font-px t-px1">
                 {String(i + 1).padStart(2, "0")} / {String(CREW.length).padStart(2, "0")}
               </p>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                data-strip
-                src={asset(`/nameplates/${c.stem}-coconutmilk.png`)}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="crew-strip pixelated"
-                style={{ "--units": c.stripW / STRIP_UNIT, "--rows": STRIP_ROWS } as React.CSSProperties}
-              />
+              <div data-strip className="crew-strip" style={{ "--units": c.stripW / STRIP_UNIT, "--rows": STRIP_ROWS } as React.CSSProperties}>
+                {(
+                  [
+                    ["full", 0, c.stripW / STRIP_UNIT],
+                    ["a", 0, c.split[0]],
+                    ["b", c.split[1], c.stripW / STRIP_UNIT - c.split[1]],
+                  ] as const
+                ).map(([k, off, w]) => (
+                  <span key={k} className={`crew-row crew-row-${k}`} style={{ "--off": off, "--w": w } as React.CSSProperties}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={asset(`/nameplates/${c.stem}-coconutmilk.png`)} alt="" loading="lazy" decoding="async" className="pixelated" />
+                  </span>
+                ))}
+              </div>
               <p data-meta className="crew-role font-px">
                 {c.role ?? ""}
               </p>

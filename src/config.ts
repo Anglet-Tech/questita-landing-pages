@@ -15,5 +15,16 @@ export const PARTNERSHIPS_EMAIL = "marketing@questita.com";
 export const FORM_SUBJECT = "Questita partnership enquiry";
 export const FORM_FROM_NAME = "Questita landing page";
 
-/** Public URL of the deployed site, used for absolute Open Graph URLs. */
-export const SITE_URL = "https://abdelrahmantarekm.github.io/questita_landing/";
+/**
+ * Public URL of the deployed site (origin plus base path), used as the
+ * metadataBase for absolute Open Graph and Twitter image URLs and in the .ics
+ * file. The deploy workflow sets NEXT_PUBLIC_SITE_URL from configure-pages'
+ * `base_url`, so it follows whichever repo the site is pushed to. Always ends
+ * in "/" so relative paths like "og.png" resolve under the base path. Local dev
+ * and builds without the variable fall back to the dev server.
+ */
+export const SITE_URL = (() => {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  const url = raw || "http://localhost:3000/";
+  return url.endsWith("/") ? url : `${url}/`;
+})();

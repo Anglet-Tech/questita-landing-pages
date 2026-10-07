@@ -93,14 +93,16 @@ export interface Creator {
   card: PlateColour;
   /** Width of the 288px tall lettering strip, for aspect ratios. */
   stripW: number;
+  /** Strip units (24px cells) where the first word ends and the second starts, for the two-row phone layout. */
+  split: [number, number];
 }
 
 export const CREW: Creator[] = [
-  { name: "Mayar Hamed", stem: "Mayar-Hamed", role: "Co-founder", card: "yellow", stripW: 2400 },
-  { name: "Radwa Adel", stem: "Radwa-Adel", role: "Co-founder", card: "bluepeach", stripW: 2112 },
-  { name: "Ahmed AboElMagd", stem: "Ahmed-AboElMagd", card: "coconutmilk", stripW: 3264 },
-  { name: "Abdelrahman Tarek", stem: "AbdElRahman-Tarek", card: "bluepeach", stripW: 3672 },
-  { name: "Hadeer Abdallah", stem: "Hadeer-Abdallah", card: "yellow", stripW: 3120 },
+  { name: "Mayar Hamed", stem: "Mayar-Hamed", role: "Co-founder", card: "yellow", stripW: 2400, split: [46, 54] },
+  { name: "Radwa Adel", stem: "Radwa-Adel", role: "Co-founder", card: "bluepeach", stripW: 2112, split: [46, 54] },
+  { name: "Ahmed AboElMagd", stem: "Ahmed-AboElMagd", card: "coconutmilk", stripW: 3264, split: [46, 54] },
+  { name: "Abdelrahman Tarek", stem: "AbdElRahman-Tarek", card: "bluepeach", stripW: 3672, split: [100, 108] },
+  { name: "Hadeer Abdallah", stem: "Hadeer-Abdallah", card: "yellow", stripW: 3120, split: [53, 61] },
 ];
 
 export const SAFETY = {

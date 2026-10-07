@@ -29,16 +29,16 @@ export default function MinimalNav() {
         data-scrolled={scrolled || undefined}
         className="min-nav fixed inset-x-0 top-0 z-50 h-16 text-merlot"
       >
-        <div className="mx-auto flex h-full max-w-[1100px] items-center justify-between gap-4 px-4 sm:px-8">
-          <a href="#top" className="block w-[104px] shrink-0" aria-label="Questita, back to top">
+        <div className="mx-auto flex h-full max-w-[1100px] items-center justify-between gap-3 px-4 sm:px-8">
+          <a href="#top" className="flex min-h-[44px] w-[88px] shrink-0 items-center min-[360px]:w-[104px]" aria-label="Questita, back to top">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={asset("/fox/Questita_wordmark_merlot.svg")} alt="" width={1148} height={189} className="h-auto w-full" />
           </a>
-          <div className="flex items-center gap-5 sm:gap-8">
-            <button type="button" onClick={openContact} className="roll-host text-[0.9375rem] font-semibold">
+          <div className="flex items-center gap-3 min-[360px]:gap-5 sm:gap-8">
+            <button type="button" onClick={openContact} className="roll-host min-h-[44px] text-[0.9375rem] font-semibold">
               <Roll>Get in touch</Roll>
             </button>
-            <a href="#top" className="font-px t-px1 tabular tracking-[0.1em]" aria-label={countdownLabel(c)}>
+            <a href="#top" className="font-px t-px1 tabular flex min-h-[44px] items-center tracking-[0.1em]" aria-label={countdownLabel(c)}>
               {c.launched ? (
                 "The board is open"
               ) : (

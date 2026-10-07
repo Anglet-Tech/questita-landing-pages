@@ -1,11 +1,11 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, MQ, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
 import { FOX, type FoxFrame } from "@/lib/fox";
 import Wipe from "./Wipe";
 import { SAFETY } from "./content";
-import { span, stepped, watchChapter } from "./filmKit";
+import { FMQ, span, stepped, watchChapter } from "./filmKit";
 
 const inOut = gsap.parseEase("power3.inOut");
 const bounce = gsap.parseEase("bounce.out");
@@ -182,7 +182,7 @@ export default function SafetyChapter() {
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add(MQ.motion, () => {
+      mm.add(FMQ.pin, () => {
         const st = stage.current!;
         const tt = title.current!;
         const beats = gsap.utils.toArray<HTMLElement>("[data-sbeat]", st);

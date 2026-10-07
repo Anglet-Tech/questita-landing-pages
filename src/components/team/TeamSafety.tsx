@@ -83,6 +83,7 @@ export default function TeamSafety() {
 
   return (
     <section ref={section} data-pin aria-labelledby="tm-safety-title" className="tm-sec tm-safety tm-full py-16 text-merlot lg:py-[clamp(32px,6vh,72px)]">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap">
         <h2 id="tm-safety-title" ref={h2} className="max-w-[18ch] text-[clamp(2.125rem,min(4.4vw,6.4vh),3.5rem)] font-extrabold leading-[1.04] tracking-[-0.03em]">
           Real life, with a playful system on top.

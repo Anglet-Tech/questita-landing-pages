@@ -38,7 +38,7 @@ export default function WallFooter() {
     return () => mm.revert();
   });
 
-  const link = "roll-host text-[1rem] font-semibold text-coconut";
+  const link = "roll-host inline-flex min-h-[44px] items-center text-[1rem] font-semibold text-coconut";
 
   return (
     <Poster
@@ -69,7 +69,7 @@ export default function WallFooter() {
             For the people who make the big city feel smaller.
           </p>
           <nav aria-label="Footer" className="lg:col-span-3">
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col">
               <li>
                 <a href="#what" className={link}>
                   <Roll>What is Questita</Roll>
@@ -89,7 +89,7 @@ export default function WallFooter() {
           </nav>
           <p className="font-px t-px1 leading-[1.8] tracking-[0.2em] text-coconut-78 lg:col-span-4 lg:text-right">Cairo first. Alexandria next.</p>
         </div>
-        <div className="mt-10 flex flex-col gap-3 pb-8 text-[0.875rem] font-medium text-coconut-78 sm:flex-row sm:justify-between">
+        <div className="wl-foot-legal mt-10 flex flex-col gap-3 pb-8 text-[0.875rem] font-medium text-coconut-78 sm:flex-row sm:justify-between">
           <p>Made in Cairo. Made by Anglet.</p>
           <p>© 2026 Questita. All rights reserved.</p>
         </div>

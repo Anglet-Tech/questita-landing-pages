@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, MQ, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useIdleGSAP } from "@/lib/gsap";
 import FilmQuestCard from "./FilmQuestCard";
 import { QUESTS, WHAT } from "./content";
-import { clamp01, span, stepped, watchChapter } from "./filmKit";
+import { clamp01, FMQ, span, stepped, watchChapter } from "./filmKit";
 
 const inOut = gsap.parseEase("power3.inOut");
 const out = gsap.parseEase("power3.out");
@@ -42,7 +42,7 @@ export default function WhatChapter() {
         };
       };
 
-      mm.add(MQ.desktop, () => {
+      mm.add(FMQ.pinDesktop, () => {
         const st = stage.current!;
         const sm = statement.current!;
         const sb = sub.current!;
@@ -113,7 +113,7 @@ export default function WhatChapter() {
         };
       });
 
-      mm.add(MQ.mobile, () => {
+      mm.add(FMQ.pinMobile, () => {
         const fill = wordFill();
         fill(0);
         const trig = ScrollTrigger.create({

@@ -161,7 +161,7 @@ export function FilmFooter() {
 
   return (
     <footer ref={footer} className="film-chapter on-dark relative z-[9] bg-merlot text-coconut">
-      <div className="mx-auto max-w-[1600px] px-4 pb-8 pt-10 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1600px] px-4 pb-[88px] pt-10 sm:px-8 lg:px-12">
         <h2 className="sr-only">Questita</h2>
         <div aria-hidden="true" className="giant font-px flex justify-between leading-[0.9] text-coconut">
           {LETTERS.map((l, i) => (
@@ -174,13 +174,13 @@ export function FilmFooter() {
         <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-[1.125rem] font-semibold">{FOOTER.tagline}</p>
           <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-7 gap-y-3">
-            <a href="#what" className="roll-host text-[1rem] font-semibold">
+            <a href="#what" className="roll-host inline-flex min-h-11 items-center text-[1rem] font-semibold">
               <Roll>What is Questita</Roll>
             </a>
-            <a href="#how" className="roll-host text-[1rem] font-semibold">
+            <a href="#how" className="roll-host inline-flex min-h-11 items-center text-[1rem] font-semibold">
               <Roll>How it works</Roll>
             </a>
-            <button type="button" onClick={openContact} className="roll-host text-[1rem] font-semibold text-yellow">
+            <button type="button" onClick={openContact} className="roll-host inline-flex min-h-11 items-center text-[1rem] font-semibold text-yellow">
               <Roll>Get in touch</Roll>
             </button>
           </nav>

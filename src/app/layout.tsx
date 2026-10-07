@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { asset } from "@/lib/asset";
+import { asset, BASE_PATH } from "@/lib/asset";
 import { SITE_URL } from "@/config";
+import OptionsPill from "@/components/OptionsPill";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -50,11 +51,16 @@ export const viewport: Viewport = {
 };
 
 /*
- * Runs before first paint. Decides whether the preloader shows (once per
- * session, never under reduced motion) and hides intro elements so the hero
- * choreography never flashes its final state first.
+ * Runs before first paint, and is route-aware (the base path is stripped first):
+ * - "/" (the chooser) gets nothing: no intro class, no preloader.
+ * - "/poster/" (option 1) decides whether the preloader shows (once per
+ *   session, never under reduced motion) and hides intro elements so the hero
+ *   choreography never flashes its final state first.
+ * - Every other option keeps the `intro` class it had before (team and film
+ *   hide their hero pieces with it), but never the preloader flag.
+ * The 6s timeout is a safety net in case a hero never removes the class.
  */
-const bootScript = `(function(){try{var d=document.documentElement;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('intro');var seen=null;try{seen=sessionStorage.getItem('questita:preloaded')}catch(e){}if(!seen)d.setAttribute('data-preload','');setTimeout(function(){d.classList.remove('intro')},6000)}catch(e){}})();`;
+const bootScript = `(function(){try{var d=document.documentElement,b=${JSON.stringify(BASE_PATH)},p=location.pathname;if(b&&p.indexOf(b)===0)p=p.slice(b.length);if(p===''||p==='/'||p==='/index.html')return;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('intro');if(p.indexOf('/poster')===0){var seen=null;try{seen=sessionStorage.getItem('questita:preloaded')}catch(e){}if(!seen)d.setAttribute('data-preload','')}setTimeout(function(){d.classList.remove('intro')},6000)}catch(e){}})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -62,7 +68,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <OptionsPill />
+      </body>
     </html>
   );
 }

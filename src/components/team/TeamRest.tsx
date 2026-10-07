@@ -27,6 +27,7 @@ export function TeamPartners() {
 
   return (
     <section ref={section} aria-labelledby="tm-partners-title" className="tm-sec tm-partners py-12 lg:py-16">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap" style={{ perspective: "1400px" }}>
         <div ref={ticket} className="tm-ticket flex flex-col lg:flex-row">
           <div className="px-corners on-dark flex-1 bg-merlot p-7 text-coconut sm:p-10 lg:px-14 lg:py-12" style={{ "--step": "8px" } as React.CSSProperties}>
@@ -98,6 +99,7 @@ export function TeamCreators() {
 
   return (
     <section ref={section} aria-labelledby="tm-creators-title" className="tm-sec tm-creators py-16 lg:py-24">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap flex flex-col items-center gap-10 lg:gap-12">
         <h2 id="tm-creators-title" ref={h2} className="text-center text-[clamp(2.125rem,min(4.4vw,6.4vh),3.5rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-merlot">
           About the creators
@@ -129,7 +131,7 @@ export function TeamCreators() {
 /** Footer: merlot, the coconut wordmark, the team's links and legal line. */
 export function TeamFooter() {
   return (
-    <footer className="tm-footer on-dark relative z-[8] bg-merlot pb-6 pt-10 text-coconut lg:pt-12">
+    <footer className="tm-footer on-dark relative z-[8] bg-merlot pb-[calc(76px_+_env(safe-area-inset-bottom))] pt-10 text-coconut lg:pt-12">
       <div className="tm-wrap">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex flex-col gap-3">
@@ -138,7 +140,7 @@ export function TeamFooter() {
             <p className="text-[clamp(0.9375rem,1.5vw,1.0625rem)] font-bold">For the people who make the big city feel smaller.</p>
           </div>
           <nav aria-label="Footer">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] font-semibold">
+            <ul className="flex flex-wrap gap-x-6 text-[0.9375rem] font-semibold [&>li>*]:inline-flex [&>li>*]:min-h-11 [&>li>*]:items-center">
               <li>
                 <a href="#what">What is Questita</a>
               </li>

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function MinimalPage() {
   return (
     <SmoothScroll>
-      <div className="minimal bg-coconut">
+      <div className="minimal overflow-x-clip bg-coconut">
         <a href="#main" className="skip-link">
           Skip to content
         </a>

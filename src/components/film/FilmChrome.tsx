@@ -19,11 +19,11 @@ export function FilmBar() {
   return (
     <header className="film-bar pointer-events-none fixed inset-x-0 top-0 z-[60]">
       <div className="mx-auto flex h-[64px] max-w-[1600px] items-center justify-between gap-4 px-4 sm:h-[72px] sm:px-8 lg:px-12">
-        <a href="#top" className="pointer-events-auto relative block h-[22px] w-[124px] sm:h-[26px] sm:w-[146px]" aria-label="Questita, back to the start">
+        <a href="#top" className="pointer-events-auto relative block h-11 w-[124px] sm:w-[146px]" aria-label="Questita, back to the start">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset("/fox/Questita_wordmark_coconutmilk.svg")} alt="" className="film-mark-light absolute inset-0 h-full w-full" />
+          <img src={asset("/fox/Questita_wordmark_coconutmilk.svg")} alt="" className="film-mark-light absolute left-0 top-1/2 h-[22px] w-full -translate-y-1/2 sm:h-[26px]" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset("/fox/Questita_wordmark_merlot.svg")} alt="" className="film-mark-dark absolute inset-0 h-full w-full" />
+          <img src={asset("/fox/Questita_wordmark_merlot.svg")} alt="" className="film-mark-dark absolute left-0 top-1/2 h-[22px] w-full -translate-y-1/2 sm:h-[26px]" />
         </a>
         <p className="film-slate font-px t-px1 hidden items-center gap-3 md:flex" aria-hidden="true">
           <span className="film-rec" />

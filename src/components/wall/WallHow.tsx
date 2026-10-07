@@ -88,8 +88,9 @@ export default function WallHow() {
         });
 
         // Drop onto the first step.
-        tl.set(foxEl, { autoAlpha: 1 }, 0);
-        tl.fromTo(foxEl, { x: () => pos()[0].x, y: () => -foxEl.offsetHeight * 1.6 }, { y: () => pos()[0].y, duration: 1, ease: stepped("power2.in", 6) }, 0);
+        // Hidden for the first part of the fall so it never sits over the heading.
+        tl.set(foxEl, { autoAlpha: 1 }, 0.35);
+        tl.fromTo(foxEl, { x: () => pos()[0].x, y: () => -foxEl.offsetHeight * 1.2 }, { y: () => pos()[0].y, duration: 1, ease: stepped("power2.in", 6) }, 0);
         air.push([0, 1]);
         lands.push(1);
         let t = 1.7;

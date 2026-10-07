@@ -23,12 +23,17 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - uses: actions/configure-pages@v5
+      # base_path is "/<repo>" for a project site and "" for a user or org
+      # root site, so the build works for whichever repo this is pushed to.
+      - id: pages
+        uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm run lint
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /questita_landing
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Full origin plus path, e.g. https://<user>.github.io/<repo>, for absolute OG URLs.
+          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

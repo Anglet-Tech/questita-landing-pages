@@ -7,11 +7,11 @@ import Sticker from "./Sticker";
 import { flowTrigger } from "./flow";
 
 const PEOPLE = [
-  { stem: "Mayar-Hamed", name: "Mayar Hamed", role: "Co-founder", color: "bluepeach", rot: -3, pos: "lg:left-[2%] lg:top-[1%] lg:w-[44%]", m: "w-[90%] self-start" },
-  { stem: "Radwa-Adel", name: "Radwa Adel", role: "Co-founder", color: "yellow", flap: "var(--blue)", rot: 2.5, pos: "lg:left-[53%] lg:top-[6%] lg:w-[44%]", m: "w-[90%] self-end" },
-  { stem: "Ahmed-AboElMagd", name: "Ahmed AboElMagd", color: "merlot", rot: 2, pos: "lg:left-[0%] lg:top-[56%] lg:w-[31%]", m: "w-[76%] self-start" },
-  { stem: "AbdElRahman-Tarek", name: "Abdelrahman Tarek", color: "coconutmilk", rot: -2.5, pos: "lg:left-[34.5%] lg:top-[62%] lg:w-[31%]", m: "w-[76%] self-end" },
-  { stem: "Hadeer-Abdallah", name: "Hadeer Abdallah", color: "bluepeach", rot: 3.5, pos: "lg:left-[68%] lg:top-[53%] lg:w-[31%]", m: "w-[76%] self-start" },
+  { stem: "Mayar-Hamed", name: "Mayar Hamed", role: "Co-founder", color: "bluepeach", rot: -3, pos: "lg:left-[2%] lg:top-[1%] lg:w-[44%]", m: "w-[90%] self-start sm:w-[46%]" },
+  { stem: "Radwa-Adel", name: "Radwa Adel", role: "Co-founder", color: "yellow", flap: "var(--blue)", rot: 2.5, pos: "lg:left-[53%] lg:top-[6%] lg:w-[44%]", m: "w-[90%] self-end sm:w-[46%]" },
+  { stem: "Ahmed-AboElMagd", name: "Ahmed AboElMagd", color: "merlot", rot: 2, pos: "lg:left-[0%] lg:top-[56%] lg:w-[31%]", m: "w-[76%] self-start sm:w-[30%]" },
+  { stem: "AbdElRahman-Tarek", name: "Abdelrahman Tarek", color: "coconutmilk", rot: -2.5, pos: "lg:left-[34.5%] lg:top-[62%] lg:w-[31%]", m: "w-[76%] self-end sm:w-[30%]" },
+  { stem: "Hadeer-Abdallah", name: "Hadeer Abdallah", color: "bluepeach", rot: 3.5, pos: "lg:left-[68%] lg:top-[53%] lg:w-[31%]", m: "w-[76%] self-start sm:w-[30%]" },
 ] as const;
 
 /** The nameplates, stuck on like name-badge stickers. Co-founders first and bigger. */
@@ -47,7 +47,7 @@ export default function WallCreators() {
       <h2 id="wl-creators-t" className="text-center text-[clamp(2.4rem,5.4vw,4.8rem)] font-extrabold leading-[1] tracking-[-0.04em] text-merlot">
         About the creators
       </h2>
-      <div ref={board} className="wl-plates relative mx-auto mt-12 flex max-w-[1080px] flex-col gap-8 lg:mt-14 lg:block lg:aspect-[5/3]">
+      <div ref={board} className="wl-plates relative mx-auto mt-12 flex max-w-[1080px] flex-col gap-8 sm:flex-row sm:flex-wrap sm:items-start sm:justify-center sm:gap-x-6 sm:gap-y-10 lg:mt-14 lg:block lg:aspect-[5/3]">
         {PEOPLE.map((p, i) => (
           <Sticker
             key={p.stem}

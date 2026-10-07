@@ -47,7 +47,8 @@ export default function Footer() {
     { scope: footer },
   );
 
-  const linkCls = "roll-host text-[1rem] font-semibold text-coconut";
+  // The ::after extends each link's hit area to 44px tall without moving anything.
+  const linkCls = "roll-host relative text-[1rem] font-semibold text-coconut after:absolute after:inset-x-0 after:-inset-y-[11px] after:content-['']";
 
   return (
     <footer ref={footer} data-nav="dark" className="on-dark relative z-[8] bg-merlot text-coconut">
@@ -109,7 +110,7 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 pb-8 text-[0.875rem] font-medium text-coconut-78 sm:flex-row sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 pb-[calc(84px+env(safe-area-inset-bottom))] text-[0.875rem] font-medium text-coconut-78 sm:flex-row sm:justify-between">
           <p>Made in Cairo. Made by Anglet.</p>
           <p>© 2026 Questita. All rights reserved.</p>
         </div>

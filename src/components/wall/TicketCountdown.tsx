@@ -59,7 +59,7 @@ export default function TicketCountdown({ className = "" }: { className?: string
       </div>
       <div className="wl-ticket-perf" aria-hidden="true" />
       <div className="wl-ticket-stub flex flex-col items-center justify-center px-3 pr-4 sm:px-4 sm:pr-5" style={{ clipPath: tornClip }} aria-hidden="true">
-        <span className="font-px t-px3 leading-none text-merlot">30</span>
+        <span className="font-px t-px2 leading-none text-merlot sm:t-px3">30</span>
         <span className="font-px t-px1 mt-1 tracking-[0.2em] text-merlot">Nov</span>
       </div>
     </div>

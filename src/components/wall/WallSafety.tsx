@@ -140,7 +140,7 @@ export default function WallSafety() {
         Real life, with a playful system on top.
       </h2>
 
-      <ul data-notices="" className="mt-12 grid gap-10 md:grid-cols-2 lg:mt-14 lg:grid-cols-6 lg:gap-x-8 lg:gap-y-12">
+      <ul data-notices="" className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-10 md:grid-cols-2 lg:mt-14 lg:grid-cols-6 lg:gap-x-8 lg:gap-y-12">
         <Notice i={0} rot={-1.6} bg="on-dark bg-merlot text-coconut" className="lg:col-span-2" title="Everyone’s verified." body="ID and a live photo at sign-up, so the person you meet is the person on the profile.">
           <div data-idcard="" className="relative" aria-hidden="true">
             <div className="px-corners flex items-center gap-3 bg-coconut p-3 text-merlot" style={{ "--step": "4px" } as React.CSSProperties}>
@@ -197,12 +197,12 @@ export default function WallSafety() {
         </Notice>
 
         <Notice i={3} rot={1.2} framed bg="bg-coconut text-merlot" className="lg:col-span-3" title="Show up, level up." body="Earn points for showing up and being someone people want to quest with again.">
-          <div className="flex w-full items-end justify-center gap-8" aria-hidden="true">
+          <div className="flex w-full flex-wrap items-end justify-center gap-x-6 gap-y-3" aria-hidden="true">
             <p className="font-px t-px3 tabular leading-none">
               <span data-xp="">+120</span>
               <span className="t-px1 ml-2 align-top">XP</span>
             </p>
-            <svg viewBox="0 0 30 24" width="120" height="96" shapeRendering="crispEdges">
+            <svg viewBox="0 0 30 24" width="120" height="96" shapeRendering="crispEdges" className="h-auto w-[90px] sm:w-[120px]">
               {[0, 1, 2, 3, 4, 5].map((n) => (
                 <g key={n} data-xpstep="">
                   <path d={`M${n * 5} ${24 - (n + 1) * 4}h5v${(n + 1) * 4}h-5z`} fill="#681B2B" />

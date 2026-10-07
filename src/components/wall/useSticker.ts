@@ -117,27 +117,69 @@ export function useSticker<T extends HTMLElement>(opts: StickerOptions) {
       }
     }
 
-    const onDown = (e: PointerEvent) => {
-      if (e.button !== 0 || !allowed()) return;
-      if ((e.target as Element).closest("button, a, input, textarea, select")) return;
-      e.preventDefault();
+    // Touch: a vertical swipe on a sticker scrolls the page (touch-action: pan-y).
+    // A drag starts on a clear sideways move, or after a short press and hold.
+    let pending: { x: number; y: number; t: number; id: number } | null = null;
+    let hold: ReturnType<typeof setTimeout> | undefined;
+    const clearPending = () => {
+      pending = null;
+      clearTimeout(hold);
+    };
+
+    const begin = (pointerId: number, cx: number, cy: number, t: number) => {
       stopFlight();
       gsap.killTweensOf(el, "rotation");
       dragging = true;
-      id = e.pointerId;
-      el.setPointerCapture(id);
+      id = pointerId;
+      try {
+        el.setPointerCapture(id);
+      } catch {
+        // The pointer may already be gone; the drag still follows pointer events on the sticker.
+      }
       lim = limits();
-      sx = e.clientX;
-      sy = e.clientY;
+      sx = cx;
+      sy = cy;
       ox = x;
       oy = y;
       vx = vy = 0;
-      hist = [{ x: e.clientX, y: e.clientY, t: e.timeStamp }];
+      hist = [{ x: cx, y: cy, t }];
       el.style.zIndex = String(++zTop);
       el.classList.add("is-grabbed");
       optsRef.current.onGrab?.();
     };
+
+    const onDown = (e: PointerEvent) => {
+      if (e.button !== 0 || !allowed()) return;
+      if ((e.target as Element).closest("button, a, input, textarea, select")) return;
+      if (e.pointerType === "touch") {
+        clearPending();
+        pending = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId };
+        hold = setTimeout(() => {
+          if (pending) begin(pending.id, pending.x, pending.y, performance.now());
+          pending = null;
+        }, 280);
+        return;
+      }
+      e.preventDefault();
+      begin(e.pointerId, e.clientX, e.clientY, e.timeStamp);
+    };
+    // Once a touch drag is on, keep the page from scrolling under it.
+    const onTouchMove = (e: TouchEvent) => {
+      if (dragging && e.cancelable) e.preventDefault();
+    };
     const onMove = (e: PointerEvent) => {
+      if (pending && e.pointerId === pending.id) {
+        const dx = e.clientX - pending.x;
+        const dy = e.clientY - pending.y;
+        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+          const p = pending;
+          clearPending();
+          begin(p.id, p.x, p.y, p.t);
+        } else if (Math.abs(dy) > 8 || Math.abs(dx) > 8) {
+          clearPending();
+          return;
+        } else return;
+      }
       if (!dragging || e.pointerId !== id) return;
       x = ox + (e.clientX - sx);
       y = oy + (e.clientY - sy);
@@ -152,6 +194,7 @@ export function useSticker<T extends HTMLElement>(opts: StickerOptions) {
       tilt(base + gsap.utils.clamp(-MAX_TILT, MAX_TILT, cvx * TILT));
     };
     const onUp = (e: PointerEvent) => {
+      if (pending && e.pointerId === pending.id) clearPending();
       if (!dragging || e.pointerId !== id) return;
       dragging = false;
       if (el.hasPointerCapture(id)) el.releasePointerCapture(id);
@@ -222,6 +265,7 @@ export function useSticker<T extends HTMLElement>(opts: StickerOptions) {
     el.addEventListener("pointerup", onUp);
     el.addEventListener("pointercancel", onUp);
     el.addEventListener("dblclick", reset);
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
     el.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
     return () => {
@@ -231,6 +275,8 @@ export function useSticker<T extends HTMLElement>(opts: StickerOptions) {
       el.removeEventListener("pointerup", onUp);
       el.removeEventListener("pointercancel", onUp);
       el.removeEventListener("dblclick", reset);
+      el.removeEventListener("touchmove", onTouchMove);
+      clearPending();
       el.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
       gsap.killTweensOf(el);

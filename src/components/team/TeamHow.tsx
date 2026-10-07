@@ -93,6 +93,7 @@ export default function TeamHow() {
 
   return (
     <section ref={section} data-pin aria-labelledby="tm-how-title" className="tm-sec tm-how tm-full py-16 text-merlot lg:py-[clamp(32px,7vh,88px)]">
+      <span className="tm-edge" aria-hidden="true" />
       <div className="tm-inner tm-wrap">
         <div className="mb-8 flex flex-col gap-4 lg:mb-[clamp(16px,3vh,40px)] lg:flex-row lg:items-end lg:justify-between lg:gap-9">
           <h2 id="tm-how-title" ref={h2} className="text-[clamp(2.75rem,min(6vw,9vh),4.5rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">

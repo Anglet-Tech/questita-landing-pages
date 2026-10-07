@@ -48,7 +48,7 @@ export default function Problem() {
             {i < quoteWords.length - 1 && <span className="text-[0px]"> </span>}
           </Fragment>
         ))}{" "}
-        <span ref={fix} className="hl" aria-label={FIX}>
+        <span ref={fix} className="hl max-[399px]:inline-block! max-[399px]:whitespace-normal!" aria-label={FIX}>
           <span aria-hidden="true">
             {FIX.split("").map((ch, i) => (
               <span key={i} data-char="">

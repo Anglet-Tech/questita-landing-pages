@@ -93,7 +93,7 @@ export default function Creators() {
   );
 
   return (
-    <section id="creators" ref={section} data-nav="dark" aria-labelledby="creators-title" className="on-dark relative z-[7] bg-merlot py-16 text-coconut lg:py-28">
+    <section id="creators" ref={section} data-nav="dark" aria-labelledby="creators-title" className="on-dark relative z-[7] overflow-x-clip bg-merlot py-16 text-coconut lg:py-28">
       <PixelSeam from="coconut" to="merlot" />
       <div className="mx-auto max-w-[1200px] px-4 sm:px-8 lg:px-12">
         <h2 id="creators-title" className="text-[clamp(2.2rem,4.4vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">

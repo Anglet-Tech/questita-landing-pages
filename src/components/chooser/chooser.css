@@ -1,0 +1,470 @@
+/* ------------------------------------------------------------------------
+   Chooser ("/"): presents every landing option. All classes are prefixed
+   `ch-` so nothing leaks into the option routes after a client navigation.
+   Motion: a CSS load stagger and a hover pan, both off under reduced motion.
+   ------------------------------------------------------------------------ */
+
+.ch {
+  --ch-gutter: 16px;
+  --ch-max: 1320px;
+  background: var(--coconut);
+  color: var(--body);
+  min-height: 100dvh;
+}
+@media (min-width: 640px) {
+  .ch {
+    --ch-gutter: 32px;
+  }
+}
+@media (min-width: 1100px) {
+  .ch {
+    --ch-gutter: 48px;
+  }
+}
+.ch-wrap {
+  max-width: var(--ch-max);
+  margin-inline: auto;
+  padding-inline: max(var(--ch-gutter), env(safe-area-inset-left)) max(var(--ch-gutter), env(safe-area-inset-right));
+}
+
+/* A stepped edge band, the same staircase the poster nav uses. */
+.ch-steps {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='8' shape-rendering='crispEdges'%3E%3Crect width='16' height='8'/%3E%3Crect x='16' width='8' height='4'/%3E%3C/svg%3E") 0 0 / 32px 8px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='8' shape-rendering='crispEdges'%3E%3Crect width='16' height='8'/%3E%3Crect x='16' width='8' height='4'/%3E%3C/svg%3E") 0 0 / 32px 8px repeat-x;
+  pointer-events: none;
+}
+
+/* ---- Header (merlot) -------------------------------------------------- */
+.ch-head {
+  position: relative;
+  background: var(--merlot);
+  color: var(--coconut);
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-bottom: 56px;
+}
+.ch-head .ch-steps {
+  top: 100%;
+  background: var(--merlot);
+}
+.ch-head-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px 32px;
+}
+.ch-mark {
+  width: 132px;
+  height: auto;
+}
+.ch-kicker {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  color: var(--coconut-78);
+}
+.ch-kicker-sq {
+  width: 8px;
+  height: 8px;
+  background: var(--blue);
+  flex: none;
+}
+.ch-title {
+  margin-top: 14px;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 7vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--coconut);
+  text-wrap: balance;
+}
+.ch-title span {
+  display: block;
+  color: var(--yellow);
+}
+.ch-lede {
+  margin-top: 20px;
+  max-width: 34rem;
+  font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--coconut-78);
+}
+
+.ch-fox {
+  display: block;
+  width: 123px; /* 3x the 41px fox grid, so every fox pixel is whole */
+  padding: 0;
+  margin: 0 0 -8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  align-self: end;
+  min-height: 44px;
+}
+.ch-fox:focus-visible {
+  outline-color: var(--yellow);
+}
+.ch-fox svg {
+  image-rendering: pixelated;
+}
+.ch-fox g {
+  transition: transform 0.08s steps(1);
+}
+@media (min-width: 640px) {
+  .ch-fox {
+    width: 205px; /* 5x */
+  }
+}
+@media (min-width: 1100px) {
+  .ch-fox {
+    width: 287px; /* 7x */
+  }
+  .ch-head {
+    padding-bottom: 72px;
+  }
+}
+/* Phones: the fox sits on its own row, top right, so the title gets the full width. */
+@media (max-width: 639px) {
+  .ch-head-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ch-fox {
+    grid-row: 1;
+    justify-self: end;
+    margin: -22px 0 -8px;
+  }
+  .ch-head-text {
+    grid-row: 2;
+  }
+  .ch-kicker {
+    margin-top: 8px;
+  }
+}
+@media (max-width: 379px) {
+  .ch-fox {
+    width: 82px; /* 2x */
+    margin-top: -22px;
+  }
+}
+
+/* ---- Options grid ------------------------------------------------------ */
+.ch-main {
+  padding-top: 64px;
+  padding-bottom: 96px;
+}
+.ch-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+@media (min-width: 680px) {
+  .ch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1100px) {
+  .ch-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+  .ch-note {
+    grid-column: span 2;
+  }
+}
+
+.ch-card {
+  display: flex;
+  transition: transform 0.35s var(--ease-expo), filter 0.35s ease;
+}
+.ch-card-frame {
+  --step: 6px;
+  flex: 1;
+  display: flex;
+  background: var(--merlot);
+  padding: 4px;
+}
+.ch-card-in {
+  --step: 4px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--coconut);
+  overflow: hidden;
+}
+
+/* Thumbnail: a 16:10 window onto a 1440 x 900 capture. */
+.ch-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--merlot-700);
+  border-bottom: 4px solid var(--merlot);
+}
+.ch-thumb img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.ch-thumb-hero {
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+/* The tall capture is exactly 4 frames high, so -75% shows the last frame. */
+.ch-thumb-tall {
+  height: auto;
+  opacity: 0;
+  transform: translateY(0);
+  transition: transform 0.9s var(--ease-expo), opacity 0s linear 0.9s;
+  will-change: transform;
+}
+
+.ch-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px 20px 22px;
+}
+.ch-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-height: 26px;
+}
+.ch-badge {
+  --step: 2px;
+  background: var(--yellow);
+  color: var(--merlot);
+  padding: 3px 8px 2px;
+}
+.ch-name {
+  margin-top: 10px;
+  font-size: clamp(1.5rem, 2.2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--merlot);
+}
+.ch-desc {
+  margin-top: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.ch-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.ch-tag {
+  --step: 2px;
+  background: var(--blue);
+  color: var(--merlot);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 7px 10px 6px;
+}
+.ch-actions {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ch-open {
+  min-height: 48px;
+  padding: 12px 22px;
+}
+.ch-open:focus-visible {
+  outline-color: var(--merlot);
+}
+.ch-path {
+  color: var(--merlot);
+  opacity: 0.7;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* The eighth tile: how to get around, plus quick links to every option. */
+.ch-note {
+  --step: 6px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: space-between;
+  gap: 28px;
+  background: var(--yellow);
+  color: var(--merlot);
+  padding: 24px;
+}
+@media (min-width: 1100px) {
+  .ch-note {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: stretch;
+    gap: 32px;
+    padding: 32px;
+  }
+}
+.ch-note-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+.ch-note-title {
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+.ch-note-text p {
+  max-width: 44ch;
+  font-weight: 500;
+  line-height: 1.75;
+}
+.ch-note-pill {
+  --step: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--merlot);
+  color: var(--coconut);
+  font-weight: 700;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+.ch-quick > p {
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+.ch-quick ul {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Two columns only where the tile is full width (single-column grid). */
+@media (min-width: 480px) and (max-width: 679px) {
+  .ch-quick ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
+}
+.ch-quick-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border-bottom: 2px solid rgba(104, 27, 43, 0.18);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+.ch-quick-link .font-px {
+  width: 3.4em;
+  flex: none;
+  opacity: 0.75;
+}
+.ch-quick-link:hover > span:last-child {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* ---- Footer (merlot) --------------------------------------------------- */
+.ch-foot {
+  position: relative;
+  background: var(--merlot);
+  color: var(--coconut);
+  padding-top: 40px;
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+}
+.ch-foot .ch-steps {
+  bottom: 100%;
+  background: var(--merlot);
+  transform: scaleY(-1);
+}
+.ch-foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+}
+.ch-foot-made {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 700;
+  font-size: 1.0625rem;
+}
+.ch-foot-made img {
+  width: 40px;
+  height: 40px;
+}
+
+/* ---- Interaction --------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .ch-card:hover {
+    transform: translateY(-6px);
+    filter: drop-shadow(6px 10px 14px rgba(104, 27, 43, 0.22));
+  }
+}
+.ch-card:focus-within {
+  transform: translateY(-6px);
+  filter: drop-shadow(6px 10px 14px rgba(104, 27, 43, 0.22));
+}
+.ch-card:hover .ch-thumb-tall,
+.ch-card:focus-within .ch-thumb-tall {
+  opacity: 1;
+  transform: translateY(-75%);
+  transition: transform 7s cubic-bezier(0.45, 0, 0.55, 1), opacity 0s;
+}
+
+/* ---- Load stagger -------------------------------------------------------- */
+@keyframes ch-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ch-rise {
+    animation: ch-rise 0.7s var(--ease-expo) both;
+    animation-delay: calc(var(--d, 0) * 70ms);
+  }
+  .ch-card-frame,
+  .ch-note {
+    animation: ch-rise 0.7s var(--ease-expo) both;
+    animation-delay: calc(300ms + var(--i, 0) * 70ms);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ch-card,
+  .ch-thumb-tall {
+    transition: none !important;
+  }
+  .ch-card:hover,
+  .ch-card:focus-within {
+    transform: none;
+  }
+  .ch-card:hover .ch-thumb-tall,
+  .ch-card:focus-within .ch-thumb-tall {
+    opacity: 0;
+    transform: none;
+  }
+}

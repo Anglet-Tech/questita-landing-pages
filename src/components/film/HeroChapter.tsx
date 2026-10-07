@@ -9,7 +9,7 @@ import PixelFox from "@/components/PixelFox";
 import { Magnetic, Roll } from "@/components/ui";
 import FilmCountdown from "./FilmCountdown";
 import { HERO } from "./content";
-import { pixelCircle, setTopTone, span, watchChapter } from "./filmKit";
+import { FMQ, pixelCircle, setTopTone, span, watchChapter } from "./filmKit";
 
 /** Centre of the viewer-left eye highlight in the wow frame, in fox pixels. */
 const EYE = { x: 13, y: 21 };
@@ -45,14 +45,8 @@ export default function HeroChapter() {
       const mm = gsap.matchMedia();
       const html = document.documentElement;
 
+      // Intro on load runs wherever motion is allowed, pinned or not.
       mm.add(MQ.motion, () => {
-        const st = stage.current!;
-        const cnt = counter.current!;
-        const cam = foxCam.current!;
-        const cp = copy.current!;
-        const ft = foot.current!;
-        const ir = iris.current!;
-
         // ---- Intro on load: the digits stair-wipe in, the fox rises in steps,
         // the headline arrives word by word.
         if (html.classList.contains("intro")) {
@@ -81,8 +75,18 @@ export default function HeroChapter() {
             .from(foxSlot.current, { yPercent: 70, autoAlpha: 0, duration: 0.5, ease: "steps(5)" }, 0.45)
             .from("[data-w]", { yPercent: 115, duration: 0.95, ease: "expo.out", stagger: 0.07 }, 0.55)
             .from("[data-cta]", { y: 20, autoAlpha: 0, duration: 0.4, ease: "steps(4)", stagger: 0.08 }, 1.05)
-            .from(ft, { autoAlpha: 0, duration: 0.3, ease: "steps(3)" }, 1.2);
+            .from(foot.current, { autoAlpha: 0, duration: 0.3, ease: "steps(3)" }, 1.2);
         }
+      });
+
+      // The push needs a full frame: short screens get a static hero.
+      mm.add(FMQ.pin, () => {
+        const st = stage.current!;
+        const cnt = counter.current!;
+        const cam = foxCam.current!;
+        const cp = copy.current!;
+        const ft = foot.current!;
+        const ir = iris.current!;
 
         // ---- Camera push and iris.
         let W = 1;
@@ -200,7 +204,7 @@ export default function HeroChapter() {
         };
       });
 
-      mm.add(MQ.reduce, () => {
+      mm.add(`not all and ${FMQ.pin}`, () => {
         watchChapter(section.current!, 0, "dark");
       });
 

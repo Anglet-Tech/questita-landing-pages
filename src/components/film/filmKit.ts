@@ -10,6 +10,18 @@ import { CHAPTERS } from "./content";
 
 export type Tone = "dark" | "light";
 
+/**
+ * Pinned chapters need room: below 560px of height (landscape phones) every
+ * pin degrades to the static stacked layout, as under reduced motion. The
+ * CSS uses the same min-height in film.css.
+ */
+const PIN = "(prefers-reduced-motion: no-preference) and (min-height: 560px)";
+export const FMQ = {
+  pin: PIN,
+  pinDesktop: `(min-width: 1024px) and ${PIN}`,
+  pinMobile: `(max-width: 1023px) and ${PIN}`,
+} as const;
+
 const root = () => document.querySelector<HTMLElement>(".film");
 
 /**
@@ -25,8 +37,10 @@ export function watchChapter(section: HTMLElement, index: number, tone: Tone | (
   const num = r.querySelector<HTMLElement>("[data-slate-n]");
   ScrollTrigger.create({
     trigger: section,
-    start: "top 36px",
-    end: "bottom 36px",
+    // 30% down: by then the incoming wipe already covers the bar, so the slate
+    // and the bar colours switch with the picture, not after it.
+    start: "top 30%",
+    end: "bottom 30%",
     onToggle: (self) => {
       if (!self.isActive) return;
       r.dataset.top = toneNow();

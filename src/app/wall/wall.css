@@ -130,7 +130,9 @@
   transform: rotate(var(--rot, 0deg));
 }
 .wl-sticker[data-live] {
-  touch-action: none;
+  /* Vertical swipes keep scrolling the page; the drag code decides when a touch becomes a drag. */
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
@@ -475,5 +477,130 @@
   }
   .wl-how-stage {
     padding-bottom: 0;
+  }
+}
+
+/* ---- Nav: safe areas, compact CTA on very small phones, the pixel menu --- */
+.wl-nav-in {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+@media (min-width: 640px) {
+  .wl-nav-in {
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+  }
+}
+@media (min-width: 1024px) {
+  .wl-nav-in {
+    padding-left: max(48px, env(safe-area-inset-left));
+    padding-right: max(48px, env(safe-area-inset-right));
+  }
+}
+@media (max-width: 399px) {
+  .wl-nav-arrow {
+    display: none;
+  }
+  .wl-nav-cta.btn {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+.wl-menu-btn {
+  cursor: pointer;
+}
+.wl-menu-btn:active {
+  transform: translateY(1px);
+}
+.wl-menu-scrim {
+  position: fixed;
+  inset: var(--wl-nav) 0 0 0;
+  z-index: 48;
+  background: rgba(36, 27, 31, 0.28);
+  cursor: default;
+}
+.wl-menu {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--wl-nav);
+  z-index: 49;
+  background: var(--coconut);
+  max-height: calc(100dvh - var(--wl-nav));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.wl-menu::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 6px;
+  background: var(--coconut);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 12px 6px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6' shape-rendering='crispEdges'%3E%3Crect width='6' height='6'/%3E%3C/svg%3E") 0 0 / 12px 6px repeat-x;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wl-menu li {
+    animation: wl-slap 0.28s steps(4) both;
+    animation-delay: calc(var(--i) * 50ms);
+  }
+}
+@keyframes wl-slap {
+  from {
+    opacity: 0;
+    transform: scale(1.12) translateY(-6px);
+  }
+}
+.wl-menu-link:focus-visible {
+  outline-offset: 2px;
+}
+
+/* ---- Responsive fixes (round 5) ----------------------------------------- */
+/* Ticket on 320px phones: 2px digit pixels so the stub stays on screen. */
+@media (max-width: 359px) {
+  .wl-digits {
+    font-size: 14px;
+  }
+}
+/* Short desktops (720 to 820 high): the hero copy and CTAs fit above the fold
+   and clear the bottom-left "All options" pill. */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .wl-hero-in {
+    padding-top: calc(var(--wl-nav) + 3.5vh);
+  }
+  .wl-h1 {
+    font-size: clamp(2.6rem, min(5.9vw, 8.6vh), 5.2rem);
+  }
+  .wl-hero-sub {
+    margin-top: 1rem;
+  }
+  .wl-hero-ticket {
+    margin-top: 1.25rem;
+  }
+  .wl-hero-ctas {
+    margin-top: 1rem;
+  }
+}
+/* The last lines of the page clear the fixed bottom-left pill and the home indicator. */
+.wl-foot-legal {
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+/* Short phones (640 to 700 high): tighter hero so the CTAs sit above the bottom-left pill. */
+@media (max-width: 767px) and (max-height: 700px) {
+  .wl-h1 {
+    font-size: 2.3rem;
+  }
+  .wl-hero-sub {
+    margin-top: 0.75rem;
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+  .wl-hero-ticket {
+    margin-top: 1.1rem;
+  }
+  .wl-hero-ctas {
+    margin-top: 0.9rem;
   }
 }

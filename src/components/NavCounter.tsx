@@ -16,7 +16,7 @@ export default function NavCounter({ visible }: { visible: boolean }) {
       tabIndex={visible ? 0 : -1}
       aria-hidden={visible ? undefined : true}
       data-visible={visible || undefined}
-      className="nav-pill btn btn-yellow btn-sm font-px tabular !min-h-[36px] !px-3 !py-1.5 text-merlot"
+      className="nav-pill btn btn-yellow btn-sm font-px tabular !min-h-[36px] !px-3 !py-1.5 text-merlot after:absolute after:inset-x-0 after:-inset-y-1 after:content-['']"
     >
       {c.launched ? (
         <span className="t-px1 tracking-[0.1em]">The board is open</span>

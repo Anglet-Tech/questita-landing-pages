@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { isScrollLocked } from "@/lib/store";
-import { advance, announceStop, back, cancelWalk, getNav, rebuildStops, setAuto, trackScroll, useNav } from "./questStore";
+import { advance, announceStop, back, cancelWalk, DEBUG, getNav, rebuildStops, setAuto, trackScroll, useNav } from "./questStore";
 
 /** While any of these is open or in use, AUTO waits. */
 const BUSY = ".q2-popup-wrap.is-on, .q2-overlay.is-on .q2-fit:hover, .q2-overlay.is-on:has(:focus-visible), .q2-vig.is-on:hover";
@@ -35,8 +35,8 @@ export default function QuestControls() {
     };
     window.addEventListener("resize", onResize);
     const raf = requestAnimationFrame(rebuildStops);
-    // DEBUG-ONLY: lets the dev playthrough scripts read the stop index.
-    if (process.env.NODE_ENV !== "production") Object.assign(window, { __q2nav: getNav });
+    // Diagnostics: `?debug` (any build) or dev exposes the stop index to the console and test scripts.
+    if (DEBUG || process.env.NODE_ENV !== "production") Object.assign(window, { __q2nav: getNav });
 
     // Manual scrolling hands control back to the player: the walk lets go, AUTO stops.
     const onWheel = () => {
@@ -104,10 +104,11 @@ export default function QuestControls() {
 
   // Scrolled (not walked) onto a stop: announce it once it settles.
   useEffect(() => {
-    if (nav.walking !== null || !nav.exact) return;
+    // Announce after scrolling too (exact or between stops), once the scroll settles.
+    if (nav.walking !== null) return;
     const id = setTimeout(() => {
       const n = getNav();
-      if (n.walking === null && n.exact && n.say.trim() !== n.stops[n.at]?.label) announceStop();
+      if (n.walking === null && n.say.trim() !== n.stops[n.at]?.label) announceStop();
     }, 450);
     return () => clearTimeout(id);
   }, [nav.at, nav.exact, nav.walking]);

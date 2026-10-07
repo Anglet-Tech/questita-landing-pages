@@ -104,13 +104,35 @@ export interface NavStop {
   read: number;
 }
 
+/** `?debug` or `#debug`: log the stop index and every press (production safe). */
+export const DEBUG = typeof window !== "undefined" && (/[?&]debug\b/.test(window.location.search) || window.location.hash === "#debug");
+const debugParam = (k: string) => (DEBUG ? new URLSearchParams(window.location.search).get(k) : null);
+function log(what: string) {
+  if (!DEBUG) return;
+  console.log(`[q2nav] ${what} @y=${Math.round(window.scrollY)} walking=${nav.walking} at=${nav.at}`, nav.stops.map((s) => `${s.id}:${s.y}`).join(" "));
+}
+
 /** The pinned map registers its stops with their scroll offsets (motion only). */
 type MapStops = () => NavStop[] | null;
 let mapStops: MapStops | null = null;
 
 export function registerMapStops(fn: MapStops | null) {
-  mapStops = fn;
-  if (typeof window !== "undefined") requestAnimationFrame(rebuildStops);
+  // Test hooks (debug mode only): q2nomap never registers, q2delaymap=ms registers late.
+  if (fn && debugParam("q2nomap") !== null) return;
+  const delay = Number(debugParam("q2delaymap") ?? 0);
+  const apply = () => {
+    mapStops = fn;
+    if (typeof window !== "undefined") requestAnimationFrame(rebuildStops);
+  };
+  if (fn && delay > 0) setTimeout(apply, delay);
+  else apply();
+}
+
+/** Motion mode with the map on the page: the map stops must be in the index before walking. */
+function mapMissing() {
+  if (reduced() || !document.getElementById("map")) return false;
+  const m = mapStops?.();
+  return !m || !m.length;
 }
 
 /** Seconds to type a line at 40 cps, then about 2.2s per 60 characters to read it. */
@@ -189,8 +211,19 @@ export function rebuildStops() {
   if (out[out.length - 1].y < max - 4) out.push({ id: "credits", label: "Credits", y: max, read: 0 });
   else out[out.length - 1] = { id: "credits", label: "Credits", y: max, read: 0 };
   nav = { ...nav, stops: out };
+  // Sanity check, once per distinct index: in motion mode the map alone holds 10 or more stops.
+  const sig = out.map((s) => `${s.id}:${s.y}`).join(" ");
+  if (!reduced() && document.getElementById("map") && out.length < 6 && sig !== warned) {
+    warned = sig;
+    console.warn("[q2nav] stop index looks incomplete", sig);
+  }
+  log("rebuild");
   trackScroll(window.scrollY, true);
 }
+let warned = "";
+
+/** Rebuild before any press (one layout read), so a click never walks on a stale index or page height. */
+const freshStops = () => rebuildStops();
 
 /** Called on every scroll update: which stop the player is at, and how far they got. */
 export function trackScroll(y: number, force = false) {
@@ -235,7 +268,7 @@ function announce(st: NavStop) {
 }
 export function announceStop() {
   const st = nav.stops[nav.at];
-  if (st && nav.exact) announce(st);
+  if (st) announce(st);
 }
 
 /** Walk (or, under reduced motion, jump) to stop i. */
@@ -254,6 +287,9 @@ export function walkTo(i: number) {
   const dist = Math.abs(st.y - lenis.animatedScroll) / Math.max(1, window.innerHeight);
   const duration = Math.max(0.8, Math.min(2.4, 0.4 + dist * 0.5));
   setNav({ walking: i });
+  // If another scroll takes over (an anchor link, the menu), onComplete never fires: let go anyway.
+  clearTimeout(walkTimer);
+  walkTimer = setTimeout(() => nav.walking === i && setNav({ walking: null }), duration * 1000 + 400);
   lenis.scrollTo(st.y, {
     duration,
     easing: walkEase,
@@ -265,16 +301,56 @@ export function walkTo(i: number) {
   });
 }
 
+let walkTimer: ReturnType<typeof setTimeout> | undefined;
+
 /** The player scrolled during a walk. Lenis already hands the scroll over cleanly. */
 export function cancelWalk() {
   if (nav.walking !== null) setNav({ walking: null });
 }
 
+/** The walk in progress, if Lenis is really still running it; a stale one is dropped. */
+function liveWalk() {
+  if (nav.walking === null) return null;
+  if (getLenis()?.isScrolling !== "smooth") {
+    setNav({ walking: null });
+    return null;
+  }
+  return nav.walking;
+}
+
 function here() {
-  return nav.walking ?? (nav.exact ? nav.at : null);
+  const w = liveWalk();
+  if (w !== null) return w;
+  trackScroll(window.scrollY);
+  return nav.exact ? nav.at : null;
+}
+
+/** Map stops not registered yet: retry for up to a second, then step one screen instead of skipping the map. */
+function whenReady(run: () => void, tries = 60) {
+  if (!mapMissing()) {
+    freshStops();
+    if (nav.stops.length >= 6 || reduced() || !document.getElementById("map")) return run();
+  }
+  if (tries > 0) {
+    requestAnimationFrame(() => {
+      rebuildStops();
+      whenReady(run, tries - 1);
+    });
+    return;
+  }
+  console.warn("[q2nav] map stops missing, stepping one screen", nav.stops.map((s) => `${s.id}:${s.y}`).join(" "));
+  const lenis = getLenis();
+  const y = window.scrollY + window.innerHeight;
+  if (lenis) lenis.scrollTo(y, { duration: 1, easing: walkEase });
+  else window.scrollTo({ top: y, behavior: "instant" });
 }
 
 export function next() {
+  freshStops();
+  log("next");
+  whenReady(nextNow);
+}
+function nextNow() {
   const h = here();
   if (h !== null) return walkTo(Math.min(nav.stops.length - 1, h + 1));
   const y = window.scrollY;
@@ -283,6 +359,11 @@ export function next() {
 }
 
 export function back() {
+  freshStops();
+  log("back");
+  whenReady(backNow);
+}
+function backNow() {
   const h = here();
   if (h !== null) return walkTo(Math.max(0, h - 1));
   const y = window.scrollY;
@@ -305,10 +386,13 @@ export function setAuto(on: boolean) {
 
 /** Walk to a named stop (title menu, HUD cells, map flags). Returns false if unknown. */
 export function walkToId(id: NavId): boolean {
-  if (!nav.stops.length) rebuildStops();
-  const i = indexOf(id);
-  if (i < 0) return false;
-  walkTo(i);
+  freshStops();
+  log(`walkTo ${id}`);
+  if (indexOf(id) < 0 && !mapMissing()) return false;
+  whenReady(() => {
+    const i = indexOf(id);
+    if (i >= 0) walkTo(i);
+  });
   return true;
 }
 

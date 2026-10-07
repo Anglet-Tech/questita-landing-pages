@@ -3,6 +3,7 @@
 import { memo, useEffect, useRef } from "react";
 import { prefersReducedMotion } from "@/lib/gsap";
 import type { FoxFrame } from "@/lib/fox";
+import { advance, registerSkipper } from "./questStore";
 import PixelFox from "../PixelFox";
 
 const CPS = 40;
@@ -11,7 +12,8 @@ const CPS = 40;
  * Classic RPG dialog box: coconut panel, merlot stepped frame, fox portrait,
  * speaker label, and text that types on at about 40 characters a second.
  * Typing writes to the DOM through refs (no React render per character).
- * Click or Space skips to the end. The full text is announced politely.
+ * A press (click, tap, Space, Enter, right arrow) first finishes the line,
+ * the next press walks on to the next stop. The full text is announced politely.
  */
 function Dialog({
   text,
@@ -66,19 +68,16 @@ function Dialog({
 
   useEffect(() => {
     if (!visible) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.code !== "Space" || done.current) return;
-      const t = e.target as HTMLElement | null;
-      if (t && (t.closest("button, a, input, textarea, select") || t.isContentEditable)) return;
-      e.preventDefault();
+    registerSkipper(() => {
+      if (done.current) return false;
       skip.current();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+      return true;
+    });
+    return () => registerSkipper(null);
   }, [visible]);
 
   return (
-    <div className={`q2-dialog ${visible ? "is-visible" : ""} ${className}`} onClick={() => skip.current()}>
+    <div className={`q2-dialog ${visible ? "is-visible" : ""} ${className}`} onClick={advance}>
       <div className="q2-dialog-frame px-corners">
         <div className="q2-dialog-in px-corners flex items-start gap-4 sm:gap-5">
           <div className="q2-dialog-port w-[62px] shrink-0 sm:w-[82px]">
@@ -96,7 +95,9 @@ function Dialog({
               <span ref={rest} className="invisible" />
             </p>
           </div>
-          <span ref={caret} className="q2-caret" aria-hidden="true" />
+          <span ref={caret} className="q2-next q2-caret font-px t-px1" aria-hidden="true">
+            Next <span className="q2-next-caret" />
+          </span>
         </div>
       </div>
     </div>

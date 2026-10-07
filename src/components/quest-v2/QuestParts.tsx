@@ -15,7 +15,8 @@ import { Roll } from "../ui";
 import { BOARD_LINE, HOW_STEPS, NIGHT_LINE, PARTY, QUESTS, SAFETY_ITEMS, WHY_LINES } from "./content";
 import { CREATORS } from "@/lib/creators";
 import { buildQuestMap, TILE } from "./mapgen";
-import { earnXp, jumpTo, useRoute, useXp, XP_ORDER, type StopTarget } from "./questStore";
+import { earnXp, indexOf, isEarned, jumpTo, setAuto, unlocked, useNav, useRoute, useXp, walkToId, XP_ORDER, type NavId, type StopTarget, type XpId } from "./questStore";
+import QuestControls from "./Controls";
 import { Inventory, PartySelect, QuestPopup } from "./Screens";
 import { Vignette } from "./Vignettes";
 
@@ -49,16 +50,27 @@ function useBlink(): FoxFrame {
 
 /* ---------- Title screen ---------- */
 
-const MENU = [
-  { label: "Start", run: () => go("map", "#map") },
-  { label: "How to play", run: () => go("how", "#plain-how") },
-  { label: "Contact", run: () => openContact() },
-];
+const HOW_ID = "q2-how-line";
 
 export function QuestTitle() {
   const frame = useBlink();
   const [cursor, setCursor] = useState(0);
+  const [how, setHow] = useState(false);
+  const MENU = [
+    { label: "Start", run: () => go("map", "#map") },
+    { label: "How to play", run: () => setHow((v) => !v), how: true },
+    { label: "Contact", run: () => openContact() },
+  ];
   const items = useRef<(HTMLButtonElement | null)[]>([]);
+  const section = useRef<HTMLElement>(null);
+
+  // The hint closes once the title screen is left behind.
+  useEffect(() => {
+    if (!how || !section.current) return;
+    const io = new IntersectionObserver(([e]) => !e.isIntersecting && setHow(false), { threshold: 0.25 });
+    io.observe(section.current);
+    return () => io.disconnect();
+  }, [how]);
 
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -69,7 +81,7 @@ export function QuestTitle() {
   };
 
   return (
-    <section id="title" aria-labelledby="q2-title" className="q2-title on-dark relative flex min-h-[100dvh] flex-col items-center justify-center bg-merlot px-4 pb-16 pt-28 text-center text-coconut">
+    <section id="title" ref={section} aria-labelledby="q2-title" className="q2-title on-dark relative flex min-h-[100dvh] flex-col items-center justify-center bg-merlot px-4 pb-16 pt-28 text-center text-coconut">
       <div className="q2-title-fox w-[164px] sm:w-[246px]">
         <PixelFox frame={frame} trackEyes followHead label="The Questita fox" />
       </div>
@@ -91,6 +103,8 @@ export function QuestTitle() {
               }}
               type="button"
               onClick={m.run}
+              aria-expanded={m.how ? how : undefined}
+              aria-controls={m.how ? HOW_ID : undefined}
               onPointerEnter={() => setCursor(i)}
               onFocus={() => setCursor(i)}
               className="font-px t-px1 flex min-h-[44px] items-center gap-3 px-2 text-coconut"
@@ -98,6 +112,11 @@ export function QuestTitle() {
               <span className={`q2-cursor ${cursor === i ? "is-on" : ""}`} aria-hidden="true" />
               {m.label}
             </button>
+            {m.how && (
+              <p id={HOW_ID} className="q2-how q2-panel px-bg font-px t-px1 text-yellow" hidden={!how}>
+                Scroll, or click to walk. Space for next.
+              </p>
+            )}
           </li>
         ))}
       </ul>
@@ -107,10 +126,23 @@ export function QuestTitle() {
 
 /* ---------- HUD ---------- */
 
+const XP_LABEL: Record<XpId, string> = {
+  why: "Downtown",
+  board: "The quest board",
+  "how-1": "Signpost 01",
+  "how-2": "Signpost 02",
+  "how-3": "Signpost 03",
+  "how-4": "Signpost 04",
+  night: "Night falls",
+  inventory: "Inventory",
+  party: "Choose your party",
+  save: "Save point",
+};
+
 function HudTimer() {
   const c = useCountdown(LAUNCH_ISO);
   return (
-    <button type="button" onClick={() => scrollToTarget("#launch")} aria-label={`${countdownLabel(c)} Go to the save point.`} className="q2-panel px-bg flex items-center gap-3 px-2 py-2 text-yellow min-[360px]:px-3">
+    <button type="button" onClick={() => walkToId("save") || scrollToTarget("#launch")} aria-label={`${countdownLabel(c)} Go to the save point.`} className="q2-panel px-bg flex items-center gap-3 px-2 py-2 text-yellow min-[360px]:px-3">
       {c.launched ? (
         <span className="font-px t-px1">The board is open</span>
       ) : (
@@ -145,9 +177,72 @@ function HudTimer() {
   );
 }
 
-export function QuestHud() {
+/** XP bar and route tracker: fast travel cells (own component, so a stop change re-renders only these). */
+function HudCells({ onMap }: { onMap: boolean }) {
   const xp = useXp();
   const route = useRoute();
+  const nav = useNav();
+
+  const routeOn = onMap && route.active;
+  const xpOn = onMap && !route.active;
+  // Fast travel: visited stops and the next one; later stops stay locked so the story keeps its order.
+  const cell = (xpId: XpId, navId: NavId) => {
+    const i = indexOf(navId);
+    const locked = !isEarned(xpId) && !unlocked(i);
+    const st = nav.stops[nav.at];
+    const here = nav.exact && !!st && (st.id === navId || (navId === "why-a" && st.id === "why-b") || (navId === "board" && st.id === "board-b"));
+    return {
+      locked,
+      here,
+      cls: `${locked ? "is-locked" : ""} ${here ? "is-here" : ""}`,
+      sr: locked ? ", locked" : here ? ", you are here" : "",
+      go: () => {
+        if (locked) return;
+        setAuto(false);
+        walkToId(navId);
+      },
+    };
+  };
+
+  return (
+    <>
+      <div className={`q2-route ${routeOn ? "is-on" : ""}`} role="group" aria-label={`The route: ${route.reached} of 4 signposts reached. Fast travel.`} inert={!routeOn}>
+        <span className="font-px t-px1 text-yellow" aria-hidden="true">
+          The route
+        </span>
+        <span className="flex">
+          {[0, 1, 2, 3].map((i) => {
+            const id = `how-${i + 1}` as XpId;
+            const c = cell(id, id as NavId);
+            return (
+              <button key={i} type="button" className={`q2-cellbtn ${c.cls}`} aria-label={`Signpost 0${i + 1}${c.sr}`} aria-disabled={c.locked} aria-current={c.here ? "step" : undefined} onClick={c.go}>
+                <span className={`q2-route-cell ${i < route.reached ? "is-full" : ""}`} />
+              </button>
+            );
+          })}
+        </span>
+      </div>
+
+      <div className={`q2-xp ${xpOn ? "is-on" : ""}`} role="group" aria-label={`Experience: ${xp * 10} of 100. Fast travel.`} inert={!xpOn}>
+        <span className="font-px t-px1 text-coconut" aria-hidden="true">
+          XP
+        </span>
+        <span className="flex">
+          {XP_ORDER.map((id) => {
+            const c = cell(id, id === "why" ? "why-a" : (id as NavId));
+            return (
+              <button key={id} type="button" className={`q2-cellbtn ${c.cls}`} aria-label={`${XP_LABEL[id]}${c.sr}`} aria-disabled={c.locked} aria-current={c.here ? "step" : undefined} onClick={c.go}>
+                <span className={`q2-xp-cell ${isEarned(id) ? "is-full" : ""}`} />
+              </button>
+            );
+          })}
+        </span>
+      </div>
+    </>
+  );
+}
+
+export function QuestHud() {
   const [onMap, setOnMap] = useState(false);
   const [menu, setMenu] = useState(false);
   const hud = useRef<HTMLDivElement>(null);
@@ -210,7 +305,7 @@ export function QuestHud() {
               {[
                 { l: "Start", f: () => go("map", "#map") },
                 { l: "How to play", f: () => go("how", "#plain-how") },
-                { l: "Save point", f: () => scrollToTarget("#launch") },
+                { l: "Save point", f: () => walkToId("save") || scrollToTarget("#launch") },
                 { l: "Contact", f: () => openContact() },
               ].map((m) => (
                 <li key={m.l}>
@@ -224,23 +319,9 @@ export function QuestHud() {
         </div>
       )}
 
-      <div className={`q2-route ${onMap && route.active ? "is-on" : ""}`} role="img" aria-label={`The route: ${route.reached} of 4 signposts reached`}>
-        <span className="font-px t-px1 text-yellow">The route</span>
-        <span className="flex gap-1.5">
-          {[0, 1, 2, 3].map((i) => (
-            <span key={i} className={`q2-route-cell ${i < route.reached ? "is-full" : ""}`} />
-          ))}
-        </span>
-      </div>
+      <HudCells onMap={onMap} />
 
-      <div className={`q2-xp ${onMap && !route.active ? "is-on" : ""}`} aria-label={`Experience: ${xp * 10} of 100`} role="img">
-        <span className="font-px t-px1 text-coconut">XP</span>
-        <span className="flex gap-1">
-          {XP_ORDER.map((id, i) => (
-            <span key={id} className={`q2-xp-cell ${i < xp ? "is-full" : ""}`} />
-          ))}
-        </span>
-      </div>
+      <QuestControls />
     </div>
   );
 }
@@ -298,14 +379,14 @@ export function PlainStops() {
             </button>
           </div>
         )}
-        <div>
+        <div data-q2-stop="why-a" data-q2-off="88">
           <h2 className="q2-plain-h">Stop 1: Downtown</h2>
           <Panel speaker="Fox" frame="oops">
             <p>{WHY_LINES[0]}</p>
             <p className="mt-2">{WHY_LINES[1]}</p>
           </Panel>
         </div>
-        <div>
+        <div data-q2-stop="board" data-q2-off="88">
           <h2 className="q2-plain-h">Stop 2: Zamalek and the Nile</h2>
           <Panel speaker="Fox" frame="wow">
             <p>{BOARD_LINE}</p>
@@ -325,7 +406,7 @@ export function PlainStops() {
             </div>
           </div>
         </div>
-        <div id="plain-how" tabIndex={-1}>
+        <div id="plain-how" tabIndex={-1} data-q2-stop="how-1" data-q2-off="88">
           <h2 className="q2-plain-h">Stop 3: The route</h2>
           <div className="q2-route-grid">
             {HOW_STEPS.map((h, i) => (
@@ -333,7 +414,7 @@ export function PlainStops() {
             ))}
           </div>
         </div>
-        <div>
+        <div data-q2-stop="night" data-q2-off="88">
           <h2 className="q2-plain-h">Stop 4: Night falls</h2>
           <Panel speaker="Fox" frame="happy">
             <p>{NIGHT_LINE}</p>
@@ -393,12 +474,12 @@ export function ReducedStrip() {
 export function ReducedExtras() {
   return (
     <div className="q2-reduced-only">
-      <section aria-labelledby="inv-plain" className="bg-coconut px-4 py-16 sm:px-8">
+      <section aria-labelledby="inv-plain" data-q2-stop="inventory" data-q2-off="24" className="bg-coconut px-4 py-16 sm:px-8">
         <div className="mx-auto max-w-[860px]">
           <Inventory titleId="inv-plain" />
         </div>
       </section>
-      <section aria-labelledby="party-plain" className="bg-coconut px-4 pb-24 sm:px-8">
+      <section aria-labelledby="party-plain" data-q2-stop="party" data-q2-off="88" className="bg-coconut px-4 pb-24 sm:px-8">
         <div className="mx-auto max-w-[860px]">
           <PartySelect titleId="party-plain" />
         </div>
@@ -460,7 +541,7 @@ export function SavePoint() {
   }, [toast]);
 
   return (
-    <section id="launch" ref={section} aria-labelledby="save-title" className="relative bg-yellow px-4 pb-28 pt-28 text-merlot sm:px-8">
+    <section id="launch" ref={section} data-q2-stop="save" aria-labelledby="save-title" className="relative bg-yellow px-4 pb-28 pt-28 text-merlot sm:px-8">
       <div className="mx-auto max-w-[1200px]">
         <div className="flex items-center gap-4">
           <div className="h-14 w-14">
@@ -500,7 +581,7 @@ export function SavePoint() {
 
 export function QuestPartners() {
   return (
-    <section id="contact" aria-labelledby="qp-title" className="on-dark bg-merlot px-4 py-14 text-coconut sm:px-8 lg:py-24">
+    <section id="contact" data-q2-stop="partners" aria-labelledby="qp-title" className="on-dark bg-merlot px-4 py-14 text-coconut sm:px-8 lg:py-24">
       <div className="mx-auto max-w-[1200px]">
         <h2 id="qp-title" className="max-w-[16ch] text-[clamp(2rem,4.6vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.035em]">
           Want to be part of the plan?

@@ -133,19 +133,35 @@
   background: var(--coconut);
   padding: 16px 20px 18px;
 }
-.q2-caret {
+/* "Next" affordance: shows once the line has finished typing; the caret blinks. */
+.q2-next {
   position: absolute;
   right: 14px;
-  bottom: 10px;
-  width: 12px;
-  height: 8px;
-  background: var(--merlot);
+  bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--merlot);
+  letter-spacing: 0.2em;
+  line-height: 1;
+  pointer-events: none;
+}
+.q2-caret {
   opacity: 0;
-  clip-path: polygon(0 0, 100% 0, 100% 25%, 83% 25%, 83% 50%, 67% 50%, 67% 75%, 33% 75%, 33% 50%, 17% 50%, 17% 25%, 0 25%);
 }
 .q2-caret.is-done {
-  animation: q2-blink 0.8s steps(1) infinite;
   opacity: 1;
+}
+.q2-next-caret {
+  display: block;
+  width: 12px;
+  height: 8px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 100% 25%, 83% 25%, 83% 50%, 67% 50%, 67% 75%, 33% 75%, 33% 50%, 17% 50%, 17% 25%, 0 25%);
+  animation: q2-blink 0.8s steps(1) infinite;
+}
+.q2-dialog-map .q2-dialog-in {
+  padding-bottom: 30px;
 }
 
 /* World-space sprites */
@@ -252,7 +268,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 76px 12px 16px;
+  /* Bottom padding keeps the windows clear of the bottom HUD row (controls, pill). */
+  padding: 76px 12px 76px;
   visibility: hidden;
   background: rgba(36, 27, 31, 0);
   transition: background-color 0.3s steps(3), visibility 0s 0.5s;
@@ -389,7 +406,8 @@
     margin-bottom: 12px;
   }
   .q2-start,
-  .q2-caret.is-done,
+  .q2-next-caret,
+  .q2-go.is-next .q2-go-tag,
   .q2-marker.is-on {
     animation: none;
   }
@@ -892,4 +910,344 @@
   .q2-logo {
     font-size: calc(var(--pxu) * 3);
   }
+}
+
+/* ---------- Click and keyboard play ---------- */
+
+/* BACK, AUTO, NEXT: bottom-right of the shared bottom HUD row. */
+.q2-controls {
+  position: fixed;
+  right: calc(24px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  gap: 9px;
+}
+.q2-ctl {
+  --bg: var(--merlot);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--coconut);
+  font-family: var(--font-px);
+  font-size: var(--pxu);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  -webkit-font-smoothing: none;
+  line-height: 1;
+  cursor: pointer;
+}
+.q2-ctl.is-primary {
+  --bg: var(--yellow);
+  color: var(--merlot);
+}
+.q2-ctl:hover {
+  --bg: #571623;
+}
+.q2-ctl.is-primary:hover {
+  --bg: #fff09e;
+}
+.q2-ctl:active {
+  transform: translateY(1px);
+}
+.q2-ctl:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+.q2-ctl.is-primary:focus-visible {
+  outline-color: var(--merlot);
+}
+.q2-ctl[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.q2-ctl-tri {
+  display: block;
+  width: 8px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 7' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h1v7H0zM1 1h1v5H1zM2 2h1v3H2zM3 3h1v1H3z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 7' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h1v7H0zM1 1h1v5H1zM2 2h1v3H2zM3 3h1v1H3z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.q2-ctl-tri.is-back {
+  scale: -1 1;
+}
+/* AUTO: a pixel lamp, hollow when off, lit and blinking when on. */
+.q2-ctl-led {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+}
+.q2-ctl-auto.is-on {
+  --bg: var(--yellow);
+  color: var(--merlot);
+}
+.q2-ctl-auto.is-on .q2-ctl-led {
+  background: currentColor;
+  animation: q2-blink 1s steps(1) infinite;
+}
+/* Compact: arrows only (the names stay as labels for assistive tech). */
+@media (max-width: 899px), (max-height: 560px) {
+  .q2-ctl {
+    padding: 0 10px;
+    letter-spacing: 0.1em;
+    gap: 8px;
+  }
+  .q2-ctl-label {
+    display: none;
+  }
+  .q2-ctl:not(.q2-ctl-auto) {
+    width: 44px;
+    padding: 0;
+  }
+}
+@media (max-height: 560px) {
+  .q2-controls {
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 767px) {
+  .q2-controls {
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+}
+
+/* The XP bar and route tracker sit just left of the controls. */
+.q2-xp,
+.q2-route {
+  right: calc(24px + var(--q2-ctl-w, 0px) + 8px + env(safe-area-inset-right));
+  padding: 0 10px 0 12px;
+  gap: 8px;
+}
+.q2-xp.is-on,
+.q2-route.is-on {
+  pointer-events: auto;
+}
+@media (max-height: 560px) {
+  .q2-xp,
+  .q2-route {
+    right: calc(12px + var(--q2-ctl-w, 0px) + 6px + env(safe-area-inset-right));
+    padding: 0 6px 0 8px;
+  }
+}
+@media (max-width: 767px) and (min-height: 561px) {
+  .q2-route {
+    right: auto;
+    padding: 0 6px 0 10px;
+  }
+}
+
+/* HUD cells are fast travel buttons: 44px tall hit areas around the pixel cells. */
+.q2-cellbtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 44px;
+  cursor: pointer;
+}
+.q2-route .q2-cellbtn {
+  width: 28px;
+}
+@media (max-width: 767px) {
+  .q2-route .q2-cellbtn {
+    width: 24px;
+  }
+}
+.q2-cellbtn:hover > span:not(.is-full) {
+  background: rgba(254, 229, 113, 0.4);
+}
+.q2-cellbtn:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: -2px;
+}
+/* You are here: a yellow pixel under the cell. */
+.q2-cellbtn.is-here::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 6px;
+  height: 3px;
+  translate: -50% 0;
+  background: var(--yellow);
+}
+/* Locked: a dim cell with a pixel padlock, so the story keeps its order. */
+.q2-cellbtn.is-locked {
+  cursor: not-allowed;
+}
+.q2-cellbtn.is-locked > span {
+  opacity: 0.35;
+}
+.q2-cellbtn.is-locked:hover > span {
+  background: none;
+}
+.q2-cellbtn.is-locked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 8px;
+  translate: -50% -50%;
+  background: var(--coconut);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 8' shape-rendering='crispEdges'%3E%3Cpath d='M2 0h3v1H2zM1 1h1v2H1zM5 1h1v2H5zM0 3h7v5H0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 8' shape-rendering='crispEdges'%3E%3Cpath d='M2 0h3v1H2zM1 1h1v2H1zM5 1h1v2H5zM0 3h7v5H0z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.q2-route .q2-cellbtn.is-locked::after {
+  background: var(--yellow);
+}
+
+/* Map travel flags: click to walk there. The next stop bobs in yellow. */
+.q2-go {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: end center;
+  min-width: 44px;
+  min-height: 48px;
+  margin-top: -40px;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+}
+.q2-go.is-sign {
+  margin-top: -124px;
+}
+@media (max-width: 767px) {
+  .q2-go.is-sign {
+    margin-top: -100px;
+  }
+}
+.q2-go-tag {
+  position: relative;
+  display: block;
+  margin-bottom: 12px;
+  padding: 5px 8px 4px;
+  background: var(--coconut);
+  color: var(--merlot);
+  outline: 3px solid var(--merlot);
+  letter-spacing: 0.16em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.q2-go-tag::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 3px);
+  width: 12px;
+  height: 8px;
+  translate: -50% 0;
+  background: var(--merlot);
+  clip-path: polygon(0 0, 100% 0, 100% 25%, 83% 25%, 83% 50%, 67% 50%, 67% 75%, 33% 75%, 33% 50%, 17% 50%, 17% 25%, 0 25%);
+}
+.q2-go.is-next .q2-go-tag {
+  background: var(--yellow);
+  animation: q2-hover 0.9s steps(1) infinite;
+}
+.q2-go:hover .q2-go-tag,
+.q2-go:focus-visible .q2-go-tag {
+  background: var(--yellow);
+  translate: 0 -3px;
+}
+.q2-go:focus-visible {
+  outline: none;
+}
+.q2-go-name {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  padding: 4px 8px;
+  translate: -50% 0;
+  background: var(--merlot);
+  color: var(--yellow);
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.12s steps(2);
+  pointer-events: none;
+}
+.q2-go:hover .q2-go-name,
+.q2-go:focus-visible .q2-go-name {
+  opacity: 1;
+}
+
+/* Route vignettes: click the card to walk on; the Next tab straddles the frame. */
+.q2-vig {
+  position: relative;
+  cursor: pointer;
+}
+.q2-vig > .q2-next {
+  right: 20px;
+  bottom: -10px;
+  padding: 4px 8px;
+  background: var(--yellow);
+  outline: 3px solid var(--merlot);
+}
+
+/* Title screen: How to play. Beside the menu item on roomy screens; a hint panel above the bottom HUD row elsewhere. */
+.q2-how {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  z-index: 50;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 10px 14px;
+  translate: -50% 0;
+  line-height: 1.5;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+@media (min-width: 640px) and (min-height: 561px) {
+  .q2-how {
+    --bg: transparent;
+    position: absolute;
+    left: calc(100% + 20px);
+    top: 50%;
+    bottom: auto;
+    z-index: auto;
+    max-width: 340px;
+    padding: 0;
+    translate: 0 -50%;
+    text-align: left;
+  }
+}
+
+/* Phones: dock the dialog and the route card higher, so their entrance slides never reach the controls row; the card's Next tab sits on its top edge. */
+@media (max-width: 767px) {
+  .q2-dialog-map {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  /* The card enters with an 18px slide. */
+  .q2-vig-wrap {
+    bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .q2-vig > .q2-next {
+    top: -10px;
+    bottom: auto;
+  }
+}
+@media (max-height: 560px) {
+  .q2-dialog-map .q2-dialog-in {
+    padding-bottom: 24px;
+  }
+}
+/* A stepped outline that follows the clipped corners, so the buttons read on merlot, coconut and yellow sections alike. */
+.q2-ctl {
+  filter: drop-shadow(2px 0 0 var(--coconut)) drop-shadow(-2px 0 0 var(--coconut)) drop-shadow(0 2px 0 var(--coconut)) drop-shadow(0 -2px 0 var(--coconut));
+}
+.q2-ctl.is-primary,
+.q2-ctl-auto.is-on {
+  filter: drop-shadow(2px 0 0 var(--merlot)) drop-shadow(-2px 0 0 var(--merlot)) drop-shadow(0 2px 0 var(--merlot)) drop-shadow(0 -2px 0 var(--merlot));
 }

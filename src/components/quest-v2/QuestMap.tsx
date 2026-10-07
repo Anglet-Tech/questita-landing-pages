@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
-import { scrollToTarget } from "@/lib/store";
 import type { FoxFrame } from "@/lib/fox";
 import PixelFox from "../PixelFox";
 import Dialog from "./Dialog";
 import { Inventory, PartySelect, QuestPopup } from "./Screens";
 import { BOARD_LINE, HOW_STEPS, NIGHT_LINE, QUESTS, WHY_LINES } from "./content";
 import { buildQuestMap, C, computeLayout, pointAt, WORLD_H, WORLD_W, type QuestLayout, type StopId } from "./mapgen";
-import { earnXp, registerJumper, setRoute, type StopTarget, type XpId } from "./questStore";
+import { advance, earnXp, readTime, registerMapStops, setRoute, unlocked, useNav, walkToId, type NavId, type NavStop, type XpId } from "./questStore";
 import { Vignette } from "./Vignettes";
 
 /* ---------- Scroll beats: walks between stops, dwells at stops ---------- */
@@ -83,15 +82,78 @@ function evaluate(m: QuestLayout, p: number): Frame {
   return { pathT: a + (z - a) * f, beat: i, f, stop: null, sign: after ? 4 : -1, night, onRoute: false, risen: after ? 4 : 0 };
 }
 
-const JUMP: Record<StopTarget, number> = {
-  map: 0,
-  why: BEATS.findIndex((b) => b.k === "dwell" && b.stop === "why"),
-  board: BEATS.findIndex((b) => b.k === "dwell" && b.stop === "board"),
-  how: BEATS.findIndex((b) => b.k === "route"),
-  night: BEATS.findIndex((b) => b.k === "dwell" && b.stop === "night"),
-  inventory: BEATS.findIndex((b) => b.k === "dwell" && b.stop === "inventory"),
-  party: BEATS.findIndex((b) => b.k === "dwell" && b.stop === "party"),
-};
+const dwellBeat = (stop: StopId) => BEATS.findIndex((b) => b.k === "dwell" && b.stop === stop);
+/** Normalised map progress at fraction f of beat i. */
+const pAt = (i: number, f: number) => BEAT_START[i] + (f * BEATS[i].w) / TOTAL_W;
+
+/** Where click play stops on the map: dwell points past the camera blend, and just past each signpost. */
+function mapStopList(m: QuestLayout, short: boolean): (Omit<NavStop, "y"> & { p: number })[] {
+  const span = m.routeEnd - m.routeStart;
+  const out: (Omit<NavStop, "y"> & { p: number })[] = [
+    { id: "why-a", label: "Stop 1: Downtown", p: pAt(dwellBeat("why"), 0.22), read: readTime(WHY_LINES[0].length) },
+    { id: "why-b", label: "Stop 1: Downtown, the fix", p: pAt(dwellBeat("why"), 0.72), read: readTime(WHY_LINES[1].length) },
+    { id: "board", label: "Stop 2: The quest board in Zamalek", p: pAt(dwellBeat("board"), 0.24), read: readTime(BOARD_LINE.length) },
+  ];
+  // Short screens: the board line steps aside after 40% of the dwell, so the markers get a stop of their own.
+  if (short) out.push({ id: "board-b", label: "The quest board: pick a quest", p: pAt(dwellBeat("board"), 0.6), read: 5 });
+  m.signposts.forEach((sp, j) => {
+    const nextT = j < 3 ? m.signposts[j + 1].t : m.routeEnd;
+    const f = (sp.t + (nextT - sp.t) * 0.14 - m.routeStart) / span;
+    const h = HOW_STEPS[j];
+    out.push({ id: `how-${j + 1}` as NavId, label: `Signpost ${h.n}: ${h.title}`, p: pAt(ROUTE_BEAT, f), read: 1 + 2.2 * Math.max(1, (h.title.length + h.body.length) / 60) });
+  });
+  out.push(
+    { id: "night", label: "Stop 4: Night falls", p: pAt(dwellBeat("night"), 0.55), read: readTime(NIGHT_LINE.length) },
+    { id: "inventory", label: "Inventory", p: pAt(dwellBeat("inventory"), 0.3), read: 6 },
+    { id: "party", label: "Choose your party", p: pAt(dwellBeat("party"), 0.3), read: 6 },
+  );
+  return out;
+}
+
+/** Map flags you can click to walk there: each stop's landmark and each signpost. */
+const FLAGS: { id: NavId; group: NavId[]; label: string; sign?: number; stop?: StopId }[] = [
+  { id: "why-a", group: ["why-a", "why-b"], label: "Downtown", stop: "why" },
+  { id: "board", group: ["board", "board-b"], label: "The quest board", stop: "board" },
+  ...HOW_STEPS.map((h, i) => ({ id: `how-${i + 1}` as NavId, group: [`how-${i + 1}` as NavId], label: `Signpost ${h.n}`, sign: i })),
+  { id: "night", group: ["night"], label: "Night falls", stop: "night" },
+  { id: "inventory", group: ["inventory"], label: "Inventory", stop: "inventory" },
+  { id: "party", group: ["party"], label: "Choose your party", stop: "party" },
+];
+
+/** Travel flags: the next stop bobs in yellow, visited ones stay quiet; later ones are not shown. */
+const TravelFlags = memo(function TravelFlags({ data, s }: { data: QuestLayout; s: number }) {
+  const nav = useNav();
+  if (!nav.stops.length) return null;
+  const hereId = nav.exact && nav.walking === null ? nav.stops[nav.at]?.id : null;
+  return (
+    <>
+      {FLAGS.map((fl) => {
+        const i = nav.stops.findIndex((x) => x.id === fl.id);
+        if (i < 0 || !unlocked(i) || (hereId && fl.group.includes(hereId))) return null;
+        const at = fl.sign !== undefined ? data.signposts[fl.sign].at : data.stops[fl.stop!].focus;
+        const isNext = i > nav.reach;
+        return (
+          <button
+            key={fl.id}
+            type="button"
+            tabIndex={-1}
+            className={`q2-go pointer-events-auto ${fl.sign !== undefined ? "is-sign" : ""} ${isNext ? "is-next" : ""}`}
+            style={{ left: at.x * s, top: at.y * s }}
+            aria-label={`Walk to ${fl.label}`}
+            onClick={() => walkToId(fl.id)}
+          >
+            <span className="q2-go-tag font-px t-px1" aria-hidden="true">
+              {isNext ? "Go" : "Back"}
+            </span>
+            <span className="q2-go-name font-px t-px1" aria-hidden="true">
+              {fl.label}
+            </span>
+          </button>
+        );
+      })}
+    </>
+  );
+});
 
 interface Ui {
   dialog: { text: string; frame: FoxFrame; speaker: string } | null;
@@ -485,11 +547,9 @@ export default function QuestMap() {
         render();
         if (st.isActive) start();
 
-        registerJumper((target) => {
-          const at = st.start + (st.end - st.start) * (BEAT_START[JUMP[target]] + (target === "map" ? 0 : 0.012));
-          scrollToTarget(at);
-          return true;
-        });
+        registerMapStops(() =>
+          mapStopList(data, H < 560).map(({ p, ...rest }) => ({ ...rest, y: st.start + (st.end - st.start) * p })),
+        );
 
         const onXp = () => {
           const layer = xpLayer.current;
@@ -507,7 +567,7 @@ export default function QuestMap() {
         return () => {
           stop();
           st.kill();
-          registerJumper(null);
+          registerMapStops(null);
           window.removeEventListener("quest:xp", onXp);
           window.removeEventListener("resize", resize);
         };
@@ -523,7 +583,8 @@ export default function QuestMap() {
     if (!stageEl) return;
     const fit = () => {
       stageEl.querySelectorAll<HTMLElement>(".q2-fit").forEach((el) => {
-        const pad = parseFloat(getComputedStyle(el.parentElement!).paddingTop) + 16;
+        const cs = getComputedStyle(el.parentElement!);
+        const pad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
         const avail = stageEl.clientHeight - pad;
         const k = Math.min(1, avail / Math.max(1, el.offsetHeight));
         el.style.setProperty("--fit", k.toFixed(3));
@@ -549,7 +610,7 @@ export default function QuestMap() {
 
   return (
     <section id="map" ref={section} aria-label="The map of Cairo" className="q2-scene relative bg-merlot">
-      <div ref={stage} className="relative h-[100svh] w-full overflow-hidden bg-coconut">
+      <div ref={stage} className="relative h-[100svh] w-full overflow-clip bg-coconut">
         <canvas ref={canvasRef} className="pixelated absolute inset-0" aria-hidden="true" />
 
         {/* World-space layer: moves with the camera. */}
@@ -595,12 +656,14 @@ export default function QuestMap() {
                     aria-expanded={popup === mk.id}
                     aria-label={`${q.label}: ${q.kind}, ${q.title}${q.full ? ", full" : ""}`}
                     onClick={() => setPopup((p) => (p === mk.id ? null : mk.id))}
-                    onFocus={() => setPopup(mk.id)}
+                    // Keyboard focus opens the popup; a mouse or tap focus leaves it to the click (no open-then-toggle-shut).
+                    onFocus={(e) => e.currentTarget.matches(":focus-visible") && setPopup(mk.id)}
                   >
                     <span aria-hidden="true">!</span>
                   </button>
                 );
               })}
+              <TravelFlags data={data} s={s} />
               <div ref={foxEl} className="q2-avatar" aria-hidden="true">
                 <div className="q2-avatar-in">
                   <PixelFox frame="happy" />
@@ -615,8 +678,11 @@ export default function QuestMap() {
 
         <div ref={vigWrap} className={`q2-vig-wrap ${ui.active >= 0 ? "is-on" : ""}`}>
           {HOW_STEPS.map((h, i) => (
-            <div key={h.n} className={`q2-vig ${ui.active === i ? "is-on" : ""}`} inert={ui.active !== i}>
+            <div key={h.n} className={`q2-vig ${ui.active === i ? "is-on" : ""}`} inert={ui.active !== i} onClick={advance}>
               <Vignette index={i} />
+              <span className="q2-next font-px t-px1" aria-hidden="true">
+                Next <span className="q2-next-caret" />
+              </span>
             </div>
           ))}
         </div>

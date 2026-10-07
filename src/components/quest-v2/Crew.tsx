@@ -18,7 +18,7 @@ export default function Crew() {
   const fox: FoxFrame = pick.role ? "wow" : "wink";
 
   return (
-    <section id="crew" aria-labelledby="crew-title" className="bg-coconut px-4 py-16 sm:px-8 lg:py-24">
+    <section id="crew" data-q2-stop="crew" aria-labelledby="crew-title" className="bg-coconut px-4 py-16 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-[1100px]">
         <div className="q2-window px-frame px-corners" style={{ "--step": "6px" } as React.CSSProperties}>
           <div className="px-frame-in px-corners bg-coconut p-5 sm:p-8" style={{ "--step": "5px" } as React.CSSProperties}>

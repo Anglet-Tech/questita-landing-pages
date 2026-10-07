@@ -502,7 +502,8 @@ export default function QuestMap() {
                     aria-expanded={popup === mk.id}
                     aria-label={`${q.label}: ${q.kind}, ${q.title}${q.full ? ", full" : ""}`}
                     onClick={() => setPopup((p) => (p === mk.id ? null : mk.id))}
-                    onFocus={() => setPopup(mk.id)}
+                    // Keyboard focus opens the popup; a mouse or tap focus leaves it to the click (no open-then-toggle-shut).
+                    onFocus={(e) => e.currentTarget.matches(":focus-visible") && setPopup(mk.id)}
                   >
                     <span aria-hidden="true">!</span>
                   </button>
